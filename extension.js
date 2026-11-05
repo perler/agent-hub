@@ -69,7 +69,22 @@ function publishAvailability() {
   return asana;
 }
 
+// 0.78.7 only: the rename to Agent Hub changes the extension id, and globalState is per
+// extension id and unreadable from outside, so write the four keys to a file the new
+// extension imports once (lib/migrate.js there).
+function exportStateForRename(context) {
+  try {
+    const keys = ['claudeHelper.favourites', 'claudeHelper.hiddenSessions', 'claudeHelper.pinnedSessions', 'claudeHelper.fastHoverApplied'];
+    const out = {};
+    for (const k of keys) { const v = context.globalState.get(k); if (v !== undefined) out[k] = v; }
+    const dir = path.join(require('os').homedir(), '.cache', 'claude-code-helper');
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'globalstate-export.json'), JSON.stringify(out, null, 2));
+  } catch (e) { console.error('Claude Code Helper: state export failed', e); }
+}
+
 function activate(context) {
+  exportStateForRename(context);
   setExtCtx(context);
   publishAvailability();
   applyFastHoverOnce(context);
