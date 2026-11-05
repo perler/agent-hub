@@ -1,8 +1,8 @@
 {
-  "name": "claude-code-helper",
-  "displayName": "Claude Code Helper",
+  "name": "agent-hub",
+  "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.78.7",
+  "version": "0.79.0",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -21,682 +21,682 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "claude-code-helper",
-          "title": "Claude Code Helper",
+          "id": "agent-hub",
+          "title": "Agent Hub",
           "icon": "resources/icon.svg"
         }
       ]
     },
     "views": {
-      "claude-code-helper": [
+      "agent-hub": [
         {
-          "id": "claudeHelper.ask",
+          "id": "agentHub.ask",
           "name": "New Task",
           "type": "webview",
           "initialSize": 1
         },
         {
-          "id": "claudeHelper.queue",
+          "id": "agentHub.queue",
           "name": "Queue",
-          "when": "claudeHelper.asanaAvailable"
+          "when": "agentHub.asanaAvailable"
         },
         {
-          "id": "claudeHelper.favourites",
+          "id": "agentHub.favourites",
           "name": "Favourites"
         },
         {
-          "id": "claudeHelper.sessions",
+          "id": "agentHub.sessions",
           "name": "Recent Sessions"
         },
         {
-          "id": "claudeHelper.bookmarks",
+          "id": "agentHub.bookmarks",
           "name": "Bookmarks"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "claudeHelper.favourites",
-        "contents": "No favourites yet.\n[Add Favourite](command:claudeHelper.addFavourite)\n[Add Current Workspace](command:claudeHelper.addCurrentWorkspace)"
+        "view": "agentHub.favourites",
+        "contents": "No favourites yet.\n[Add Favourite](command:agentHub.addFavourite)\n[Add Current Workspace](command:agentHub.addCurrentWorkspace)"
       },
       {
-        "view": "claudeHelper.queue",
+        "view": "agentHub.queue",
         "contents": "No queue sessions yet.\nPick tasks with 📅 Today, ⏳ Input or 📥 Both under New Task."
       },
       {
-        "view": "claudeHelper.bookmarks",
-        "contents": "No bookmarks yet.\n[Add Bookmark](command:claudeHelper.addBookmark)"
+        "view": "agentHub.bookmarks",
+        "contents": "No bookmarks yet.\n[Add Bookmark](command:agentHub.addBookmark)"
       }
     ],
     "commands": [
       {
-        "command": "claudeHelper.newSession",
+        "command": "agentHub.newSession",
         "title": "New Claude Session…",
         "icon": "$(rocket)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.goToFolder",
+        "command": "agentHub.goToFolder",
         "title": "Go to Folder…",
         "icon": "$(search)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.folderSearchNewSubfolder",
+        "command": "agentHub.folderSearchNewSubfolder",
         "title": "Go to Folder: New Subfolder & Start Claude",
         "icon": "$(new-folder)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.addFavourite",
+        "command": "agentHub.addFavourite",
         "title": "Add Favourite…",
         "icon": "$(add)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.addCurrentWorkspace",
+        "command": "agentHub.addCurrentWorkspace",
         "title": "Add Current Workspace",
         "icon": "$(root-folder)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.addFromExplorer",
+        "command": "agentHub.addFromExplorer",
         "title": "Add to Claude Favourites",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.startClaudeFromExplorer",
+        "command": "agentHub.startClaudeFromExplorer",
         "title": "Start Claude Here",
         "icon": "$(play)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.newFolderAndStartClaudeFromExplorer",
+        "command": "agentHub.newFolderAndStartClaudeFromExplorer",
         "title": "New Folder & Start Claude…",
         "icon": "$(new-folder)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.resumeClaudeFromExplorer",
+        "command": "agentHub.resumeClaudeFromExplorer",
         "title": "Resume Claude Here",
         "icon": "$(debug-rerun)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.refreshQueueCounts",
+        "command": "agentHub.refreshQueueCounts",
         "title": "Refresh Queue Counts",
         "icon": "$(refresh)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.quickSession",
+        "command": "agentHub.quickSession",
         "title": "Quick Session (Scratch)",
         "icon": "$(zap)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.refreshFavourites",
+        "command": "agentHub.refreshFavourites",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
-        "command": "claudeHelper.startClaude",
+        "command": "agentHub.startClaude",
         "title": "Start New Session Here",
         "icon": "$(play)"
       },
       {
-        "command": "claudeHelper.resumeClaude",
+        "command": "agentHub.resumeClaude",
         "title": "Resume Claude",
         "icon": "$(debug-rerun)"
       },
       {
-        "command": "claudeHelper.openTerminalHere",
+        "command": "agentHub.openTerminalHere",
         "title": "Open Terminal Here",
         "icon": "$(terminal)"
       },
       {
-        "command": "claudeHelper.openFolder",
+        "command": "agentHub.openFolder",
         "title": "Open Folder in New Window",
         "icon": "$(folder-opened)"
       },
       {
-        "command": "claudeHelper.revealInExplorer",
+        "command": "agentHub.revealInExplorer",
         "title": "Reveal in Explorer",
         "icon": "$(folder-opened)"
       },
       {
-        "command": "claudeHelper.copyPath",
+        "command": "agentHub.copyPath",
         "title": "Copy Folder Path"
       },
       {
-        "command": "claudeHelper.renameFavourite",
+        "command": "agentHub.renameFavourite",
         "title": "Rename",
         "icon": "$(edit)"
       },
       {
-        "command": "claudeHelper.removeFavourite",
+        "command": "agentHub.removeFavourite",
         "title": "Remove",
         "icon": "$(trash)"
       },
       {
-        "command": "claudeHelper.moveUp",
+        "command": "agentHub.moveUp",
         "title": "Move Up",
         "icon": "$(arrow-up)"
       },
       {
-        "command": "claudeHelper.moveDown",
+        "command": "agentHub.moveDown",
         "title": "Move Down",
         "icon": "$(arrow-down)"
       },
       {
-        "command": "claudeHelper.revealTabCwd",
+        "command": "agentHub.revealTabCwd",
         "title": "Reveal Session Folder",
         "icon": "$(folder-opened)"
       },
       {
-        "command": "claudeHelper.openTabTask",
+        "command": "agentHub.openTabTask",
         "title": "Open Asana Task",
         "icon": "$(link-external)"
       },
       {
-        "command": "claudeHelper.refreshSessions",
+        "command": "agentHub.refreshSessions",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
-        "command": "claudeHelper.searchSessions",
+        "command": "agentHub.searchSessions",
         "title": "Search Sessions",
         "icon": "$(search)"
       },
       {
-        "command": "claudeHelper.clearSessionSearch",
+        "command": "agentHub.clearSessionSearch",
         "title": "Clear Session Search",
         "icon": "$(clear-all)"
       },
       {
-        "command": "claudeHelper.searchQueue",
+        "command": "agentHub.searchQueue",
         "title": "Search Queue",
         "icon": "$(search)"
       },
       {
-        "command": "claudeHelper.clearQueueSearch",
+        "command": "agentHub.clearQueueSearch",
         "title": "Clear Queue Search",
         "icon": "$(clear-all)"
       },
       {
-        "command": "claudeHelper.resumeSession",
+        "command": "agentHub.resumeSession",
         "title": "Resume Session",
         "icon": "$(debug-rerun)"
       },
       {
-        "command": "claudeHelper.resumeAndCompact",
+        "command": "agentHub.resumeAndCompact",
         "title": "Resume and Compact",
         "icon": "$(fold)"
       },
       {
-        "command": "claudeHelper.copySessionId",
+        "command": "agentHub.copySessionId",
         "title": "Copy Session ID"
       },
       {
-        "command": "claudeHelper.copySessionPath",
+        "command": "agentHub.copySessionPath",
         "title": "Copy Session File Path"
       },
       {
-        "command": "claudeHelper.revealSessionFile",
+        "command": "agentHub.revealSessionFile",
         "title": "Reveal Session File in Explorer"
       },
       {
-        "command": "claudeHelper.pinSession",
+        "command": "agentHub.pinSession",
         "title": "Pin Session",
         "icon": "$(pin)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.unpinSession",
+        "command": "agentHub.unpinSession",
         "title": "Unpin Session",
         "icon": "$(pinned)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.hideSession",
+        "command": "agentHub.hideSession",
         "title": "Hide Session",
         "icon": "$(eye-closed)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.showHiddenSessions",
+        "command": "agentHub.showHiddenSessions",
         "title": "Show Hidden Sessions",
         "icon": "$(eye)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.deleteSession",
+        "command": "agentHub.deleteSession",
         "title": "Delete Session…",
         "icon": "$(trash)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.openSessionTask",
+        "command": "agentHub.openSessionTask",
         "title": "Open Asana Task",
         "icon": "$(link-external)"
       },
       {
-        "command": "claudeHelper.openQueueSession",
+        "command": "agentHub.openQueueSession",
         "title": "Open Session",
         "icon": "$(plug)"
       },
       {
-        "command": "claudeHelper.openQueueTask",
+        "command": "agentHub.openQueueTask",
         "title": "Open Asana Task",
         "icon": "$(link-external)"
       },
       {
-        "command": "claudeHelper.removeQueueRow",
+        "command": "agentHub.removeQueueRow",
         "title": "Remove from List",
         "icon": "$(close)"
       },
       {
-        "command": "claudeHelper.clearFinishedQueue",
+        "command": "agentHub.clearFinishedQueue",
         "title": "Clear Finished",
         "icon": "$(clear-all)"
       },
       {
-        "command": "claudeHelper.addBookmark",
+        "command": "agentHub.addBookmark",
         "title": "Add Bookmark…",
         "icon": "$(add)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.editBookmark",
+        "command": "agentHub.editBookmark",
         "title": "Edit Bookmark…",
         "icon": "$(edit)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.removeBookmark",
+        "command": "agentHub.removeBookmark",
         "title": "Remove Bookmark",
         "icon": "$(trash)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.refreshBookmarks",
+        "command": "agentHub.refreshBookmarks",
         "title": "Refresh",
         "icon": "$(refresh)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.openBookmark",
+        "command": "agentHub.openBookmark",
         "title": "Open Bookmark in Browser",
         "icon": "$(link-external)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.openBookmarksFile",
+        "command": "agentHub.openBookmarksFile",
         "title": "Edit Bookmarks File",
         "icon": "$(json)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       },
       {
-        "command": "claudeHelper.showHelp",
+        "command": "agentHub.showHelp",
         "title": "Help: Queue, Badges, Unlock",
         "icon": "$(question)",
-        "category": "Claude Code Helper"
+        "category": "Agent Hub"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "claudeHelper.folderSearchNewSubfolder",
+          "command": "agentHub.folderSearchNewSubfolder",
           "when": "false"
         }
       ],
       "view/title": [
         {
-          "command": "claudeHelper.goToFolder",
-          "when": "view == claudeHelper.favourites",
+          "command": "agentHub.goToFolder",
+          "when": "view == agentHub.favourites",
           "group": "navigation@0"
         },
         {
-          "command": "claudeHelper.refreshQueueCounts",
-          "when": "view == claudeHelper.ask && claudeHelper.asanaAvailable",
+          "command": "agentHub.refreshQueueCounts",
+          "when": "view == agentHub.ask && agentHub.asanaAvailable",
           "group": "navigation@1"
         },
         {
-          "command": "claudeHelper.quickSession",
-          "when": "view == claudeHelper.ask",
+          "command": "agentHub.quickSession",
+          "when": "view == agentHub.ask",
           "group": "navigation@2"
         },
         {
-          "command": "claudeHelper.addFavourite",
-          "when": "view == claudeHelper.favourites",
+          "command": "agentHub.addFavourite",
+          "when": "view == agentHub.favourites",
           "group": "navigation@1"
         },
         {
-          "command": "claudeHelper.addCurrentWorkspace",
-          "when": "view == claudeHelper.favourites",
+          "command": "agentHub.addCurrentWorkspace",
+          "when": "view == agentHub.favourites",
           "group": "navigation@2"
         },
         {
-          "command": "claudeHelper.refreshFavourites",
-          "when": "view == claudeHelper.favourites",
+          "command": "agentHub.refreshFavourites",
+          "when": "view == agentHub.favourites",
           "group": "navigation@3"
         },
         {
-          "command": "claudeHelper.searchQueue",
-          "when": "view == claudeHelper.queue",
+          "command": "agentHub.searchQueue",
+          "when": "view == agentHub.queue",
           "group": "navigation@0"
         },
         {
-          "command": "claudeHelper.clearQueueSearch",
-          "when": "view == claudeHelper.queue && claudeHelper.queueFiltered",
+          "command": "agentHub.clearQueueSearch",
+          "when": "view == agentHub.queue && agentHub.queueFiltered",
           "group": "navigation@1"
         },
         {
-          "command": "claudeHelper.clearFinishedQueue",
-          "when": "view == claudeHelper.queue",
+          "command": "agentHub.clearFinishedQueue",
+          "when": "view == agentHub.queue",
           "group": "navigation@2"
         },
         {
-          "command": "claudeHelper.searchSessions",
-          "when": "view == claudeHelper.sessions",
+          "command": "agentHub.searchSessions",
+          "when": "view == agentHub.sessions",
           "group": "navigation@0"
         },
         {
-          "command": "claudeHelper.clearSessionSearch",
-          "when": "view == claudeHelper.sessions && claudeHelper.sessionsFiltered",
+          "command": "agentHub.clearSessionSearch",
+          "when": "view == agentHub.sessions && agentHub.sessionsFiltered",
           "group": "navigation@1"
         },
         {
-          "command": "claudeHelper.showHiddenSessions",
-          "when": "view == claudeHelper.sessions && claudeHelper.hasHiddenSessions",
+          "command": "agentHub.showHiddenSessions",
+          "when": "view == agentHub.sessions && agentHub.hasHiddenSessions",
           "group": "navigation@2"
         },
         {
-          "command": "claudeHelper.refreshSessions",
-          "when": "view == claudeHelper.sessions",
+          "command": "agentHub.refreshSessions",
+          "when": "view == agentHub.sessions",
           "group": "navigation@3"
         },
         {
-          "command": "claudeHelper.addBookmark",
-          "when": "view == claudeHelper.bookmarks",
+          "command": "agentHub.addBookmark",
+          "when": "view == agentHub.bookmarks",
           "group": "navigation@1"
         },
         {
-          "command": "claudeHelper.refreshBookmarks",
-          "when": "view == claudeHelper.bookmarks",
+          "command": "agentHub.refreshBookmarks",
+          "when": "view == agentHub.bookmarks",
           "group": "navigation@2"
         },
         {
-          "command": "claudeHelper.openBookmarksFile",
-          "when": "view == claudeHelper.bookmarks",
+          "command": "agentHub.openBookmarksFile",
+          "when": "view == agentHub.bookmarks",
           "group": "1_ops@1"
         },
         {
-          "command": "claudeHelper.showHelp",
-          "when": "view == claudeHelper.ask",
+          "command": "agentHub.showHelp",
+          "when": "view == agentHub.ask",
           "group": "navigation@9"
         }
       ],
       "view/item/context": [
         {
-          "command": "claudeHelper.startClaude",
-          "when": "view == claudeHelper.favourites && viewItem == favourite || view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.startClaude",
+          "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "inline@2"
         },
         {
-          "command": "claudeHelper.resumeClaude",
-          "when": "view == claudeHelper.favourites && viewItem == favourite",
+          "command": "agentHub.resumeClaude",
+          "when": "view == agentHub.favourites && viewItem == favourite",
           "group": "inline@1"
         },
         {
-          "command": "claudeHelper.resumeSession",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.resumeSession",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "inline@1"
         },
         {
-          "command": "claudeHelper.revealInExplorer",
-          "when": "view == claudeHelper.favourites && viewItem == favourite || view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.revealInExplorer",
+          "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "inline@3"
         },
         {
-          "command": "claudeHelper.openSessionTask",
-          "when": "view == claudeHelper.sessions && viewItem =~ /Asana/ && claudeHelper.asanaAvailable",
+          "command": "agentHub.openSessionTask",
+          "when": "view == agentHub.sessions && viewItem =~ /Asana/ && agentHub.asanaAvailable",
           "group": "inline@4"
         },
         {
-          "command": "claudeHelper.startClaude",
-          "when": "view == claudeHelper.favourites && viewItem == favourite || view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.startClaude",
+          "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "1_run@1"
         },
         {
-          "command": "claudeHelper.resumeClaude",
-          "when": "view == claudeHelper.favourites && viewItem == favourite",
+          "command": "agentHub.resumeClaude",
+          "when": "view == agentHub.favourites && viewItem == favourite",
           "group": "1_run@2"
         },
         {
-          "command": "claudeHelper.resumeSession",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.resumeSession",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "1_run@2"
         },
         {
-          "command": "claudeHelper.resumeAndCompact",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Asana)?(Pinned)?$/",
+          "command": "agentHub.resumeAndCompact",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Asana)?(Pinned)?$/",
           "group": "1_run@3"
         },
         {
-          "command": "claudeHelper.openTerminalHere",
-          "when": "view == claudeHelper.favourites && viewItem == favourite || view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.openTerminalHere",
+          "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "2_folder@1"
         },
         {
-          "command": "claudeHelper.revealInExplorer",
-          "when": "view == claudeHelper.favourites && viewItem == favourite || view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.revealInExplorer",
+          "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "2_folder@2"
         },
         {
-          "command": "claudeHelper.openFolder",
-          "when": "view == claudeHelper.favourites && viewItem == favourite || view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.openFolder",
+          "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "2_folder@3"
         },
         {
-          "command": "claudeHelper.copyPath",
-          "when": "view == claudeHelper.favourites && viewItem == favourite || view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.copyPath",
+          "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "2_folder@4"
         },
         {
-          "command": "claudeHelper.openSessionTask",
-          "when": "view == claudeHelper.sessions && viewItem =~ /Asana/ && claudeHelper.asanaAvailable",
+          "command": "agentHub.openSessionTask",
+          "when": "view == agentHub.sessions && viewItem =~ /Asana/ && agentHub.asanaAvailable",
           "group": "3_session@1"
         },
         {
-          "command": "claudeHelper.revealSessionFile",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.revealSessionFile",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "3_session@2"
         },
         {
-          "command": "claudeHelper.copySessionId",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.copySessionId",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "3_session@3"
         },
         {
-          "command": "claudeHelper.copySessionPath",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.copySessionPath",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "3_session@4"
         },
         {
-          "command": "claudeHelper.renameFavourite",
-          "when": "view == claudeHelper.favourites && viewItem == favourite",
+          "command": "agentHub.renameFavourite",
+          "when": "view == agentHub.favourites && viewItem == favourite",
           "group": "4_manage@1"
         },
         {
-          "command": "claudeHelper.moveUp",
-          "when": "view == claudeHelper.favourites && viewItem == favourite",
+          "command": "agentHub.moveUp",
+          "when": "view == agentHub.favourites && viewItem == favourite",
           "group": "4_manage@2"
         },
         {
-          "command": "claudeHelper.moveDown",
-          "when": "view == claudeHelper.favourites && viewItem == favourite",
+          "command": "agentHub.moveDown",
+          "when": "view == agentHub.favourites && viewItem == favourite",
           "group": "4_manage@3"
         },
         {
-          "command": "claudeHelper.removeFavourite",
-          "when": "view == claudeHelper.favourites && viewItem == favourite",
+          "command": "agentHub.removeFavourite",
+          "when": "view == agentHub.favourites && viewItem == favourite",
           "group": "4_manage@9"
         },
         {
-          "command": "claudeHelper.pinSession",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?$/",
+          "command": "agentHub.pinSession",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?$/",
           "group": "4_manage@0"
         },
         {
-          "command": "claudeHelper.unpinSession",
-          "when": "view == claudeHelper.sessions && viewItem =~ /Pinned$/",
+          "command": "agentHub.unpinSession",
+          "when": "view == agentHub.sessions && viewItem =~ /Pinned$/",
           "group": "4_manage@0"
         },
         {
-          "command": "claudeHelper.hideSession",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
+          "command": "agentHub.hideSession",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "4_manage@1"
         },
         {
-          "command": "claudeHelper.deleteSession",
-          "when": "view == claudeHelper.sessions && viewItem =~ /^session(Asana)?(Pinned)?$/",
+          "command": "agentHub.deleteSession",
+          "when": "view == agentHub.sessions && viewItem =~ /^session(Asana)?(Pinned)?$/",
           "group": "4_manage@2"
         },
         {
-          "command": "claudeHelper.openQueueSession",
-          "when": "view == claudeHelper.queue && viewItem == queueRowLive",
+          "command": "agentHub.openQueueSession",
+          "when": "view == agentHub.queue && viewItem == queueRowLive",
           "group": "inline@1"
         },
         {
-          "command": "claudeHelper.openQueueTask",
-          "when": "view == claudeHelper.queue && viewItem =~ /^queueRow/",
+          "command": "agentHub.openQueueTask",
+          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
           "group": "inline@2"
         },
         {
-          "command": "claudeHelper.removeQueueRow",
-          "when": "view == claudeHelper.queue && viewItem =~ /^queueRow/",
+          "command": "agentHub.removeQueueRow",
+          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
           "group": "inline@3"
         },
         {
-          "command": "claudeHelper.openQueueSession",
-          "when": "view == claudeHelper.queue && viewItem =~ /^queueRow/",
+          "command": "agentHub.openQueueSession",
+          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
           "group": "1_open@1"
         },
         {
-          "command": "claudeHelper.openQueueTask",
-          "when": "view == claudeHelper.queue && viewItem =~ /^queueRow/",
+          "command": "agentHub.openQueueTask",
+          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
           "group": "1_open@2"
         },
         {
-          "command": "claudeHelper.removeQueueRow",
-          "when": "view == claudeHelper.queue && viewItem =~ /^queueRow/",
+          "command": "agentHub.removeQueueRow",
+          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
           "group": "9_destroy@1"
         },
         {
-          "command": "claudeHelper.editBookmark",
-          "when": "view == claudeHelper.bookmarks && viewItem == bookmark",
+          "command": "agentHub.editBookmark",
+          "when": "view == agentHub.bookmarks && viewItem == bookmark",
           "group": "inline@1"
         },
         {
-          "command": "claudeHelper.removeBookmark",
-          "when": "view == claudeHelper.bookmarks && viewItem == bookmark",
+          "command": "agentHub.removeBookmark",
+          "when": "view == agentHub.bookmarks && viewItem == bookmark",
           "group": "inline@2"
         },
         {
-          "command": "claudeHelper.editBookmark",
-          "when": "view == claudeHelper.bookmarks && viewItem == bookmark",
+          "command": "agentHub.editBookmark",
+          "when": "view == agentHub.bookmarks && viewItem == bookmark",
           "group": "3_edit@1"
         },
         {
-          "command": "claudeHelper.removeBookmark",
-          "when": "view == claudeHelper.bookmarks && viewItem == bookmark",
+          "command": "agentHub.removeBookmark",
+          "when": "view == agentHub.bookmarks && viewItem == bookmark",
           "group": "3_edit@9"
         }
       ],
       "explorer/context": [
         {
-          "command": "claudeHelper.startClaudeFromExplorer",
+          "command": "agentHub.startClaudeFromExplorer",
           "when": "explorerResourceIsFolder",
           "group": "claude-helper@1"
         },
         {
-          "command": "claudeHelper.resumeClaudeFromExplorer",
+          "command": "agentHub.resumeClaudeFromExplorer",
           "when": "explorerResourceIsFolder",
           "group": "claude-helper@2"
         },
         {
-          "command": "claudeHelper.newFolderAndStartClaudeFromExplorer",
+          "command": "agentHub.newFolderAndStartClaudeFromExplorer",
           "when": "explorerResourceIsFolder",
           "group": "claude-helper@3"
         },
         {
-          "command": "claudeHelper.addFromExplorer",
+          "command": "agentHub.addFromExplorer",
           "when": "explorerResourceIsFolder",
           "group": "claude-helper@4"
         }
       ],
       "editor/title/context": [
         {
-          "command": "claudeHelper.revealTabCwd",
+          "command": "agentHub.revealTabCwd",
           "when": "resourceScheme == vscode-terminal",
           "group": "2_files@1"
         },
         {
-          "command": "claudeHelper.openTabTask",
-          "when": "resourceScheme == vscode-terminal && claudeHelper.asanaAvailable",
+          "command": "agentHub.openTabTask",
+          "when": "resourceScheme == vscode-terminal && agentHub.asanaAvailable",
           "group": "2_files@2"
         }
       ],
       "terminal/title/context": [
         {
-          "command": "claudeHelper.revealTabCwd",
+          "command": "agentHub.revealTabCwd",
           "group": "2_files@1"
         },
         {
-          "command": "claudeHelper.openTabTask",
-          "when": "claudeHelper.asanaAvailable",
+          "command": "agentHub.openTabTask",
+          "when": "agentHub.asanaAvailable",
           "group": "2_files@2"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "claudeHelper.goToFolder",
+        "command": "agentHub.goToFolder",
         "key": "ctrl+alt+p",
         "mac": "cmd+alt+p"
       },
       {
-        "command": "claudeHelper.folderSearchNewSubfolder",
+        "command": "agentHub.folderSearchNewSubfolder",
         "key": "ctrl+enter",
         "mac": "cmd+enter",
-        "when": "claudeHelper.folderSearchOpen"
+        "when": "agentHub.folderSearchOpen"
       },
       {
-        "command": "claudeHelper.revealActiveTerminalCwd",
+        "command": "agentHub.revealActiveTerminalCwd",
         "key": "ctrl+alt+t",
         "mac": "cmd+alt+t"
       }
     ],
     "configuration": {
-      "title": "Claude Code Helper",
+      "title": "Agent Hub",
       "properties": {
-        "claudeHelper.claudeCommand": {
+        "agentHub.claudeCommand": {
           "type": "string",
           "default": "claude",
           "description": "Command used to invoke Claude Code."
         },
-        "claudeHelper.skipPermissions": {
+        "agentHub.skipPermissions": {
           "type": "boolean",
           "default": true,
           "description": "Append --dangerously-skip-permissions (YOLO)."
         },
-        "claudeHelper.cliFlags": {
+        "agentHub.cliFlags": {
           "type": "string",
           "default": "",
           "description": "Additional CLI flags appended to every claude invocation."
         },
-        "claudeHelper.defaultTerminalMode": {
+        "agentHub.defaultTerminalMode": {
           "type": "string",
           "enum": [
             "ask",
@@ -711,22 +711,22 @@
           "default": "internal",
           "description": "Where to run claude when starting/resuming a session."
         },
-        "claudeHelper.externalTerminalCommand": {
+        "agentHub.externalTerminalCommand": {
           "type": "string",
           "default": "",
           "description": "External terminal template. Placeholders: {cwd} {cmd}."
         },
-        "claudeHelper.reuseTerminal": {
+        "agentHub.reuseTerminal": {
           "type": "boolean",
           "default": false,
           "description": "Reuse a terminal with the same name instead of opening new ones."
         },
-        "claudeHelper.confirmRemove": {
+        "agentHub.confirmRemove": {
           "type": "boolean",
           "default": true,
           "description": "Ask for confirmation when removing a favourite."
         },
-        "claudeHelper.folderSearchRoots": {
+        "agentHub.folderSearchRoots": {
           "type": "array",
           "items": {
             "type": "string"
@@ -739,12 +739,12 @@
           ],
           "description": "Roots scanned by \"Go to Folder…\" (Ctrl+Alt+P)."
         },
-        "claudeHelper.folderSearchDepth": {
+        "agentHub.folderSearchDepth": {
           "type": "number",
           "default": 3,
           "description": "How many levels below each root \"Go to Folder…\" descends."
         },
-        "claudeHelper.folderSearchExcludes": {
+        "agentHub.folderSearchExcludes": {
           "type": "array",
           "items": {
             "type": "string"
@@ -760,7 +760,7 @@
           ],
           "description": "Directory names \"Go to Folder…\" skips (and never descends into)."
         },
-        "claudeHelper.folderSearchAction": {
+        "agentHub.folderSearchAction": {
           "type": "string",
           "enum": [
             "openFolder",
@@ -781,17 +781,17 @@
           "default": "reveal",
           "description": "What Enter does in \"Go to Folder…\". The other actions stay available as buttons on the highlighted row."
         },
-        "claudeHelper.shortenPaths": {
+        "agentHub.shortenPaths": {
           "type": "boolean",
           "default": true,
           "description": "Shorten paths by replacing $HOME with ~."
         },
-        "claudeHelper.sessionsMaxAgeDays": {
+        "agentHub.sessionsMaxAgeDays": {
           "type": "number",
           "default": 7,
           "description": "Only show sessions modified within the last N days in Recent Sessions."
         },
-        "claudeHelper.sessionsExcludePaths": {
+        "agentHub.sessionsExcludePaths": {
           "type": "array",
           "items": {
             "type": "string"
@@ -801,108 +801,108 @@
           ],
           "description": "Hide sessions whose working directory is one of these paths or below it (throwaway scratchpad and temp-dir sessions). ~ is expanded."
         },
-        "claudeHelper.sessionsMaxItems": {
+        "agentHub.sessionsMaxItems": {
           "type": "number",
           "default": 100,
           "description": "Maximum number of recent sessions to list."
         },
-        "claudeHelper.agentIndexPath": {
+        "agentHub.agentIndexPath": {
           "type": "string",
           "default": "~/.claude/agent-sessions.json",
           "description": "Index of helper-launched tmux agent sessions (the Asana bridge no longer writes it). Open Asana Task finds bridge sessions through `claude agents --json` and the .asana-claude.json marker in their working directory."
         },
-        "claudeHelper.agentTmuxSocket": {
+        "agentHub.agentTmuxSocket": {
           "type": "string",
           "default": "claude",
           "description": "tmux socket name (-L) used by bridge-spawned agent sessions."
         },
-        "claudeHelper.useTmux": {
+        "agentHub.useTmux": {
           "type": "boolean",
           "default": true,
           "description": "Run Start/Resume inside a tmux session on the agent socket (and attach the terminal to it) so sessions are reachable from Claude Mobile and survive reloads. Turn off to launch Claude directly in the terminal (legacy behavior)."
         },
-        "claudeHelper.useDtach": {
+        "agentHub.useDtach": {
           "type": "boolean",
           "default": true,
           "description": "When useTmux is off, launch Start/Resume inside a transparent dtach session and attach the terminal to it. dtach keeps draining Claude's output even when the browser/tab disconnects, so a closed tab no longer freezes the stream (the 'Stream idle timeout' on reconnect). Unlike tmux it has no alternate-screen, so native scroll + copy keep working. Turn off to launch Claude directly in the terminal (legacy behavior, freezes on disconnect)."
         },
-        "claudeHelper.dtachSocketDir": {
+        "agentHub.dtachSocketDir": {
           "type": "string",
           "default": "~/.claude/dtach",
           "description": "Directory for per-session dtach sockets (used when useDtach is on)."
         },
-        "claudeHelper.replayHistory": {
+        "agentHub.replayHistory": {
           "type": "boolean",
           "default": true,
           "description": "dtach keeps no history, so a tab attached to a running session (and every Queue session, which starts without a tab) shows only one screenful. With this on, new sessions are recorded to <dtachSocketDir>/<session id>.log (via util-linux `script`) and the attach prints the tail of that log into the tab first, so you can scroll back through what you missed. Terminal queries are stripped from the replay. Off: no recording on new launches, plain attach."
         },
-        "claudeHelper.replayHistoryBytes": {
+        "agentHub.replayHistoryBytes": {
           "type": "number",
           "default": 4194304,
           "minimum": 65536,
           "description": "How many bytes at the end of a session's log are replayed on attach (default 4 MB). Logs of running sessions are trimmed to this size once they pass twice of it."
         },
-        "claudeHelper.scratchDir": {
+        "agentHub.scratchDir": {
           "type": "string",
           "default": "~/tasks",
           "description": "Base directory for the New Claude Session button. Each session gets a timestamped subfolder here; rename/move it later once the work is permanent."
         },
-        "claudeHelper.autoRenameScratchSessions": {
+        "agentHub.autoRenameScratchSessions": {
           "type": "boolean",
           "default": true,
           "description": "Once a timestamp-named scratch session (in scratchDir) has ended, automatically rename its folder to a slug of Claude's generated title. Only runs when the session's claude process is not live (renaming a running session would split its transcript)."
         },
-        "claudeHelper.bookmarksFile": {
+        "agentHub.bookmarksFile": {
           "type": "string",
           "default": "",
           "description": "Path to the bookmarks JSON file. Empty = ~/.config/cc-bookmarks.json"
         },
-        "claudeHelper.clefShadow": {
+        "agentHub.clefShadow": {
           "type": "boolean",
           "default": true,
           "description": "Run Cloudflare Clef as a shadow router next to Haiku in the New Task box: the entry (and the mail it points at) goes to Cloudflare Workers AI and the answers are only logged to ~/logs/jev-shadow.jsonl for comparison. Never changes a plan. Needs /home/work/tools/jev."
         },
-        "claudeHelper.titleModel": {
+        "agentHub.titleModel": {
           "type": "string",
           "default": "claude-haiku-4-5-20251001",
           "description": "Model used to name a New Task session and match it to a client or project."
         },
-        "claudeHelper.apiKeyFile": {
+        "agentHub.apiKeyFile": {
           "type": "string",
           "default": "~/.env",
           "description": "File read for ANTHROPIC_API_KEY, used to route New Task entries straight through the API (~1s instead of ~9s via the CLI). ANTHROPIC_API_KEY in the environment wins over this file. With neither, routing falls back to `claude -p`, which needs no key."
         },
-        "claudeHelper.asanaCommand": {
+        "agentHub.asanaCommand": {
           "type": "string",
           "default": "~/tools/asana/asana",
           "description": "Asana CLI used to list projects for New Task routing. The project list is cached in ~/.cache/claude-code-helper and refreshed in the background, so a submit never waits on it. Empty = no Asana routing (folders are then matched from client directories only)."
         },
-        "claudeHelper.mailLookupCommand": {
+        "agentHub.mailLookupCommand": {
           "type": "string",
           "default": "~/projects/infra/email-automation/bin/mail-lookup.py",
           "description": "Script that resolves an `email <subject>` New Task entry to the actual inbox mail (sender, client, thread link), so the entry is routed to the sender's client and the session replies to the real thread. Prints JSON; empty = route on the typed words alone."
         },
-        "claudeHelper.mailInboxCommand": {
+        "agentHub.mailInboxCommand": {
           "type": "string",
           "default": "~/projects/infra/email-automation/bin/mail-inbox.py",
           "description": "Script behind the ✉️ Mail button: prints the inbox mail addressed to us as JSON (subject, sender, client, read state, thread link). Empty or missing = no Mail button."
         },
-        "claudeHelper.clientsDir": {
+        "agentHub.clientsDir": {
           "type": "string",
           "default": "~/clients",
           "description": "Root scanned for client folders a New Task question can be scoped to."
         },
-        "claudeHelper.projectsDir": {
+        "agentHub.projectsDir": {
           "type": "string",
           "default": "~/projects",
           "description": "Root scanned for project folders a New Task question can be scoped to."
         },
-        "claudeHelper.tabStateDecorations": {
+        "agentHub.tabStateDecorations": {
           "type": "boolean",
           "default": true,
           "description": "Show a badge on a Claude session's terminal editor tab for working / waiting for your answer / idle, driven by the tab-state.sh hook. See readme.md \"Tab state decorations\" for the required settings.json hook block."
         },
-        "claudeHelper.tabStateTrace": {
+        "agentHub.tabStateTrace": {
           "type": "boolean",
           "default": false,
           "description": "Log what each Claude terminal tab computed for its badge to ~/.cache/claude-tab-state.exttrace (diagnostics)."

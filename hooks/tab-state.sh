@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude Code Helper — records this session's tab state so the VS Code
+# Agent Hub — records this session's tab state so the VS Code
 # file-decoration provider in extension.js can show it on the terminal's
 # editor tab (a badge + colour, no title/icon change).
 #

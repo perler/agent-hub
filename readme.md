@@ -1,4 +1,4 @@
-# Claude Code Helper
+# Agent Hub
 
 A sidebar for running Claude Code out of VS Code / code-server. Five panels:
 
@@ -15,9 +15,17 @@ A sidebar for running Claude Code out of VS Code / code-server. Five panels:
 
 Replaces the standalone `claude-favourites` and `terminal-tree` extensions.
 
+**Renamed.** Until 0.78.x this was "Claude Code Helper" (`pat-erler.claude-code-helper`, settings
+`claudeHelper.*`). As Agent Hub (`pat-erler.agent-hub`, since 0.79.0) every setting is `agentHub.*`;
+a key not set under the new name falls back to its old `claudeHelper.*` value, so an existing
+settings.json keeps working. Favourites, pinned and hidden sessions are imported once from the
+export that Claude Code Helper 0.78.7 writes on activation. The cache folder
+`~/.cache/claude-code-helper/` keeps its name on purpose (external scripts write into it).
+Uninstall the old extension after switching; running both side by side duplicates the tab badges.
+
 **Some of those are only there when the machine has the pieces it needs.** The queue buttons under the New Task box, and
-the "Open Asana Task" context-menu items, appear when the Asana CLI (`claudeHelper.asanaCommand`) is installed; the ✉️ Mail
-button needs `claudeHelper.mailInboxCommand`. On a
+the "Open Asana Task" context-menu items, appear when the Asana CLI (`agentHub.asanaCommand`) is installed; the ✉️ Mail
+button needs `agentHub.mailInboxCommand`. On a
 workstation without either, the New Task box keeps
 everything but its queue row, and nothing is spawned in the background. Everything else — favourites, recent sessions, bookmarks,
 Go to Folder, the tab badges, Reveal Session Folder — needs nothing beyond Claude Code itself.
@@ -25,15 +33,15 @@ Go to Folder, the tab badges, Reveal Session Folder — needs nothing beyond Cla
 ## Installing on another workstation
 
 ```bash
-git clone https://github.com/perler/claude-code-helper.git
-cd claude-code-helper
+git clone https://github.com/perler/agent-hub.git
+cd agent-hub
 npm install -g @vscode/vsce      # once, if vsce is not already there
 vsce package
-code --install-extension claude-code-helper-*.vsix --force
+code --install-extension agent-hub-*.vsix --force
 ```
 
 Reload the window afterwards. Then set the paths that are specific to that machine —
-all of them optional, all under `claudeHelper` in settings:
+all of them optional, all under `agentHub` in settings:
 
 | Setting | What to point it at |
 |---|---|
@@ -46,8 +54,8 @@ want the Asana panels there too, that needs the `asana` CLI and the bridge, whic
 not part of this repo.
 
 **Go to Folder… (`Ctrl+Alt+P`)** — Quick Open indexes files only, so there is no built-in way to
-jump to a folder by name. This command scans `claudeHelper.folderSearchRoots` for directories and
-fuzzy-matches on the folder name. Enter runs the action set in `claudeHelper.folderSearchAction`
+jump to a folder by name. This command scans `agentHub.folderSearchRoots` for directories and
+fuzzy-matches on the folder name. Enter runs the action set in `agentHub.folderSearchAction`
 (reveal it in the Explorer of the current window, by default — if the folder is outside every open
 root you get the choice to add it to the workspace or open a new window); the other actions —
 open folder, terminal here, start Claude here, add to favourites — sit as buttons on the
@@ -58,39 +66,39 @@ highlighted row. Uses `fd` (or
 
 | Setting | Default | Purpose |
 |---|---|---|
-| `claudeHelper.claudeCommand` | `claude` | Claude CLI command / path |
-| `claudeHelper.skipPermissions` | `true` | Append `--dangerously-skip-permissions` |
-| `claudeHelper.cliFlags` | `` | Extra flags appended to every invocation |
-| `claudeHelper.defaultTerminalMode` | `internal` | `ask` / `internal` / `external` |
-| `claudeHelper.externalTerminalCommand` | `` | Template with `{cwd}` `{cmd}` |
-| `claudeHelper.reuseTerminal` | `false` | Reuse terminal with same name |
-| `claudeHelper.confirmRemove` | `true` | Confirm before removing a favourite |
-| `claudeHelper.shortenPaths` | `true` | Replace `$HOME` with `~` in displayed paths |
-| `claudeHelper.folderSearchRoots` | `~/clients ~/projects ~/hosting ~/tasks` | Roots scanned by Go to Folder… |
-| `claudeHelper.folderSearchDepth` | `3` | Levels below each root to descend |
-| `claudeHelper.folderSearchExcludes` | `node_modules .git venv .venv dist build __pycache__` | Directory names skipped |
-| `claudeHelper.folderSearchAction` | `reveal` | What Enter does in Go to Folder… |
-| `claudeHelper.tabStateDecorations` | `true` | Show working/waiting/idle badges on Claude terminal tabs (needs the hook below) |
-| `claudeHelper.tabStateTrace` | `false` | Log each tab's computed badge to `~/.cache/claude-tab-state.exttrace` |
-| `claudeHelper.sessionsMaxAgeDays` | `7` | Recent Sessions only lists sessions touched in the last N days |
-| `claudeHelper.sessionsMaxItems` | `100` | Cap on the Recent Sessions list |
-| `claudeHelper.scratchDir` | `~/tasks` | Base directory for a new, unnamed session |
-| `claudeHelper.autoRenameScratchSessions` | `true` | Rename a finished scratch folder to a slug of Claude's own session title |
-| `claudeHelper.useTmux` | `true` | Run sessions inside tmux, so they survive a reload and are reachable from Claude Mobile |
-| `claudeHelper.useDtach` | `true` | With `useTmux` off, run them inside dtach instead (this is what the tab badges need) |
-| `claudeHelper.dtachSocketDir` | `~/.claude/dtach` | Where the per-session dtach sockets live |
-| `claudeHelper.replayHistory` | `true` | Record new dtach sessions and replay the tail of the log into a tab on attach, so a tab (and every Queue session) has scrollback. Off: no recording, plain attach |
-| `claudeHelper.replayHistoryBytes` | `4194304` | How many bytes at the end of the log are replayed (logs are trimmed to this once they pass twice of it) |
-| `claudeHelper.bookmarksFile` | `` | Bookmarks JSON; empty means `~/.config/cc-bookmarks.json` |
-| `claudeHelper.clientsDir` | `~/clients` | Root of client folders the New Task box can route to |
-| `claudeHelper.projectsDir` | `~/projects` | Root of project folders the New Task box can route to |
-| `claudeHelper.titleModel` | `claude-haiku-4-5-…` | Model that names a New Task session and picks its destination |
-| `claudeHelper.apiKeyFile` | `~/.env` | File read for `ANTHROPIC_API_KEY`; routing goes through the API (~1s) instead of the CLI (~9s) |
-| `claudeHelper.asanaCommand` | `~/tools/asana/asana` | Asana CLI. **Absent means the Asana panels and buttons are hidden.** |
-| `claudeHelper.agentIndexPath` | `~/.claude/agent-sessions.json` | Index of helper-launched tmux agent sessions (the bridge no longer writes it). Open Asana Task finds bridge sessions via `claude agents --json` + the `.asana-claude.json` marker in their directory |
-| `claudeHelper.agentTmuxSocket` | `claude` | tmux socket (`-L`) the bridge's sessions use |
-| `claudeHelper.mailLookupCommand` | (site-specific) | Resolves an `email <subject>` New Task entry to the actual mail |
-| `claudeHelper.mailInboxCommand` | (site-specific) | Lists the inbox mail addressed to us; **absent means no ✉️ Mail button** |
+| `agentHub.claudeCommand` | `claude` | Claude CLI command / path |
+| `agentHub.skipPermissions` | `true` | Append `--dangerously-skip-permissions` |
+| `agentHub.cliFlags` | `` | Extra flags appended to every invocation |
+| `agentHub.defaultTerminalMode` | `internal` | `ask` / `internal` / `external` |
+| `agentHub.externalTerminalCommand` | `` | Template with `{cwd}` `{cmd}` |
+| `agentHub.reuseTerminal` | `false` | Reuse terminal with same name |
+| `agentHub.confirmRemove` | `true` | Confirm before removing a favourite |
+| `agentHub.shortenPaths` | `true` | Replace `$HOME` with `~` in displayed paths |
+| `agentHub.folderSearchRoots` | `~/clients ~/projects ~/hosting ~/tasks` | Roots scanned by Go to Folder… |
+| `agentHub.folderSearchDepth` | `3` | Levels below each root to descend |
+| `agentHub.folderSearchExcludes` | `node_modules .git venv .venv dist build __pycache__` | Directory names skipped |
+| `agentHub.folderSearchAction` | `reveal` | What Enter does in Go to Folder… |
+| `agentHub.tabStateDecorations` | `true` | Show working/waiting/idle badges on Claude terminal tabs (needs the hook below) |
+| `agentHub.tabStateTrace` | `false` | Log each tab's computed badge to `~/.cache/claude-tab-state.exttrace` |
+| `agentHub.sessionsMaxAgeDays` | `7` | Recent Sessions only lists sessions touched in the last N days |
+| `agentHub.sessionsMaxItems` | `100` | Cap on the Recent Sessions list |
+| `agentHub.scratchDir` | `~/tasks` | Base directory for a new, unnamed session |
+| `agentHub.autoRenameScratchSessions` | `true` | Rename a finished scratch folder to a slug of Claude's own session title |
+| `agentHub.useTmux` | `true` | Run sessions inside tmux, so they survive a reload and are reachable from Claude Mobile |
+| `agentHub.useDtach` | `true` | With `useTmux` off, run them inside dtach instead (this is what the tab badges need) |
+| `agentHub.dtachSocketDir` | `~/.claude/dtach` | Where the per-session dtach sockets live |
+| `agentHub.replayHistory` | `true` | Record new dtach sessions and replay the tail of the log into a tab on attach, so a tab (and every Queue session) has scrollback. Off: no recording, plain attach |
+| `agentHub.replayHistoryBytes` | `4194304` | How many bytes at the end of the log are replayed (logs are trimmed to this once they pass twice of it) |
+| `agentHub.bookmarksFile` | `` | Bookmarks JSON; empty means `~/.config/cc-bookmarks.json` |
+| `agentHub.clientsDir` | `~/clients` | Root of client folders the New Task box can route to |
+| `agentHub.projectsDir` | `~/projects` | Root of project folders the New Task box can route to |
+| `agentHub.titleModel` | `claude-haiku-4-5-…` | Model that names a New Task session and picks its destination |
+| `agentHub.apiKeyFile` | `~/.env` | File read for `ANTHROPIC_API_KEY`; routing goes through the API (~1s) instead of the CLI (~9s) |
+| `agentHub.asanaCommand` | `~/tools/asana/asana` | Asana CLI. **Absent means the Asana panels and buttons are hidden.** |
+| `agentHub.agentIndexPath` | `~/.claude/agent-sessions.json` | Index of helper-launched tmux agent sessions (the bridge no longer writes it). Open Asana Task finds bridge sessions via `claude agents --json` + the `.asana-claude.json` marker in their directory |
+| `agentHub.agentTmuxSocket` | `claude` | tmux socket (`-L`) the bridge's sessions use |
+| `agentHub.mailLookupCommand` | (site-specific) | Resolves an `email <subject>` New Task entry to the actual mail |
+| `agentHub.mailInboxCommand` | (site-specific) | Lists the inbox mail addressed to us; **absent means no ✉️ Mail button** |
 
 ### Scrollback of a dtach session
 
@@ -100,7 +108,7 @@ attached from the start held all 150 lines, 31 KB; a fresh attach 313 bytes), an
 session, which starts without a tab, never has any. tmux would fix that, but its alternate
 screen kills native wheel-scroll and select/copy, which is why this extension left it.
 
-With `claudeHelper.replayHistory` on, the dtach master runs under util-linux `script`
+With `agentHub.replayHistory` on, the dtach master runs under util-linux `script`
 (`script -q -f -e -a -O <id>.log -c "bash <runner>"`), which logs all output next to the
 socket, and the attach line becomes `steal; replay; attach`: `lib/replay.js` prints the last
 `replayHistoryBytes` of the log into the tab, then `dtach -a` takes over. The replay starts on
@@ -127,7 +135,7 @@ CLI is installed. 📥 Both walks Today and ⏳ Input as ONE queue: the two filt
 different axes — Today on assignee and due date, Input on the Priority field — so a task
 that is both sits in both, and `asana queue today+input` merges them so it is walked
 once. ✉️ Mail opens the inbox and is only there when
-`claudeHelper.mailInboxCommand` points at a script that runs. The number on a button is
+`agentHub.mailInboxCommand` points at a script that runs. The number on a button is
 what is in that queue, or that inbox, right now.
 
 📅, ⏳ and 📥 open their queue as a checklist first, grouped by project. The ▶ on a row
@@ -147,8 +155,8 @@ the only trace when the task runs in a repo folder, or it is a 💬 walk whose
 The task sessions run **without a terminal tab** (see below), so thirty tasks do not put
 thirty tabs in front of you. Each is told to check first whether its task is still real —
 answered since, fixed since, stale — and if it can simply be closed, to say so and ask
-before doing anything else. When the dtach mode is off (`claudeHelper.useTmux` on,
-`claudeHelper.useDtach` off, or the terminal mode not `internal`) there is no such thing as
+before doing anything else. When the dtach mode is off (`agentHub.useTmux` on,
+`agentHub.useDtach` off, or the terminal mode not `internal`) there is no such thing as
 a session without a tab, and a ticked task gets a tab instead, with a 📌 in front of its
 name.
 
@@ -171,7 +179,7 @@ cannot place (its project names no client) does not stop the queue: the row read
 `needs folder`, and clicking it asks for the folder, after which it starts as soon as a slot
 is free. A folder that already holds a session for the task resumes it, with no tab too.
 
-A session started this way is only the dtach master that `claudeHelper.useDtach` already
+A session started this way is only the dtach master that `agentHub.useDtach` already
 uses, started from the extension host with the same claude.slice scope and memory limits,
 the same runner script and claude flags, and `CCH_TAB_ID` in its environment, so the hooks
 keep writing the tab-state file. Clicking a row attaches a terminal tab to that session's
@@ -310,7 +318,7 @@ tab painted before the first answer landed stuck on its stale badge. Both are wh
 instead.) If the directory or its format ever changes, every read returns nothing and the hook files
 run the badges alone, as they did before.
 
-Set `"claudeHelper.tabStateTrace": true` to log what every tab computed to
+Set `"agentHub.tabStateTrace": true` to log what every tab computed to
 `~/.cache/claude-tab-state.exttrace` — key, live state, file state and the badge — for diagnosing a
 badge that looks wrong. Read live, so it needs no window reload.
 
@@ -424,7 +432,7 @@ still there to read back from `/proc/<pid>/environ`. The extension uses that as 
 a terminal wasn't launched (or registered) in the current window session, so badges keep working
 after a reload without needing anything re-launched.
 
-**Known limitation: tmux-mode sessions never get a badge.** With `claudeHelper.useTmux` on
+**Known limitation: tmux-mode sessions never get a badge.** With `agentHub.useTmux` on
 (the default), the terminal tab only ever runs `tmux attach` — a different OS process from the
 tmux server that actually holds Claude — so there's no live process whose environment could ever
 be read back for it, reload or not. Turn `useTmux` off (dtach takes over, also on by default) if

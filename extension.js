@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
+const { importOldState } = require('./lib/migrate');
 
 const {
   asanaAvailable, asanaTaskFor, forgetAsanaAvailable, openAsanaTask, refreshAsanaProjects,
@@ -45,7 +46,7 @@ function folderOf(arg) {
 }
 
 async function applyFastHoverOnce(context) {
-  const FLAG = 'claudeHelper.fastHoverApplied';
+  const FLAG = 'agentHub.fastHoverApplied';
   if (context.globalState.get(FLAG)) return;
   try {
     const hoverCfg = vscode.workspace.getConfiguration('workbench.hover');
@@ -65,30 +66,15 @@ async function applyFastHoverOnce(context) {
 // to be gone there rather than present and dead.
 function publishAvailability() {
   const asana = asanaAvailable();
-  vscode.commands.executeCommand('setContext', 'claudeHelper.asanaAvailable', asana);
+  vscode.commands.executeCommand('setContext', 'agentHub.asanaAvailable', asana);
   return asana;
 }
 
-// 0.78.7 only: the rename to Agent Hub changes the extension id, and globalState is per
-// extension id and unreadable from outside, so write the four keys to a file the new
-// extension imports once (lib/migrate.js there).
-function exportStateForRename(context) {
-  try {
-    const keys = ['claudeHelper.favourites', 'claudeHelper.hiddenSessions', 'claudeHelper.pinnedSessions', 'claudeHelper.fastHoverApplied'];
-    const out = {};
-    for (const k of keys) { const v = context.globalState.get(k); if (v !== undefined) out[k] = v; }
-    const dir = path.join(require('os').homedir(), '.cache', 'claude-code-helper');
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'globalstate-export.json'), JSON.stringify(out, null, 2));
-  } catch (e) { console.error('Claude Code Helper: state export failed', e); }
-}
-
 function activate(context) {
-  exportStateForRename(context);
   setExtCtx(context);
   publishAvailability();
   applyFastHoverOnce(context);
-  vscode.commands.executeCommand('setContext', 'claudeHelper.hasHiddenSessions', hiddenSessions().size > 0);
+  vscode.commands.executeCommand('setContext', 'agentHub.hasHiddenSessions', hiddenSessions().size > 0);
 
   // Tab state decorations — see the "tab state decorations" section above.
   tabStateSeedTerminals();
@@ -112,13 +98,13 @@ function activate(context) {
   for (const ms of [4000, 12000, 30000]) setTimeout(() => { repairTabNames(); }, ms);
   const askProvider = new AskViewProvider();
   context.subscriptions.push(vscode.window.registerWebviewViewProvider(
-    'claudeHelper.ask', askProvider, { webviewOptions: { retainContextWhenHidden: true } }
+    'agentHub.ask', askProvider, { webviewOptions: { retainContextWhenHidden: true } }
   ));
   refreshAsanaProjects(12);   // warm the New Task routing table; never blocks a submit
 
   // The Queue view: one row per task a queue button started as a tab-less session.
   const queueProvider = initQueue();
-  const queueView = vscode.window.createTreeView('claudeHelper.queue', {
+  const queueView = vscode.window.createTreeView('agentHub.queue', {
     treeDataProvider: queueProvider, showCollapseAll: false,
   });
   queueProvider.view = queueView;
@@ -127,13 +113,13 @@ function activate(context) {
 
   favProvider = new FavouritesProvider(context);
   setFavProvider(favProvider);
-  const favView = vscode.window.createTreeView('claudeHelper.favourites', {
+  const favView = vscode.window.createTreeView('agentHub.favourites', {
     treeDataProvider: favProvider, showCollapseAll: false,
   });
   context.subscriptions.push(favView);
 
   sessProvider = new SessionsProvider();
-  const sessView = vscode.window.createTreeView('claudeHelper.sessions', {
+  const sessView = vscode.window.createTreeView('agentHub.sessions', {
     treeDataProvider: sessProvider, showCollapseAll: true,
   });
   sessProvider.view = sessView;
@@ -142,18 +128,18 @@ function activate(context) {
 
   bookmarksProvider = new BookmarksProvider();
   setBookmarksProvider(bookmarksProvider);
-  const bookmarksView = vscode.window.createTreeView('claudeHelper.bookmarks', {
+  const bookmarksView = vscode.window.createTreeView('agentHub.bookmarks', {
     treeDataProvider: bookmarksProvider, showCollapseAll: false,
   });
   context.subscriptions.push(bookmarksView);
 
   const reg = (id, fn) => context.subscriptions.push(vscode.commands.registerCommand(id, fn));
-  reg('claudeHelper.refreshQueueCounts', () => askProvider.refreshCounts());
-  reg('claudeHelper.openQueueSession', (row) => openQueueSession(row));
-  reg('claudeHelper.openQueueTask', (row) => openQueueTask(row));
-  reg('claudeHelper.removeQueueRow', (row) => removeQueueRow(row));
-  reg('claudeHelper.clearFinishedQueue', () => clearFinishedQueue());
-  reg('claudeHelper.searchQueue', () => {
+  reg('agentHub.refreshQueueCounts', () => askProvider.refreshCounts());
+  reg('agentHub.openQueueSession', (row) => openQueueSession(row));
+  reg('agentHub.openQueueTask', (row) => openQueueTask(row));
+  reg('agentHub.removeQueueRow', (row) => removeQueueRow(row));
+  reg('agentHub.clearFinishedQueue', () => clearFinishedQueue());
+  reg('agentHub.searchQueue', () => {
     const box = vscode.window.createInputBox();
     box.title = 'Search Queue';
     box.placeholder = 'Filter by anything in the tooltip: task name, folder, state, session id…';
@@ -163,13 +149,13 @@ function activate(context) {
     box.onDidHide(() => box.dispose());
     box.show();
   });
-  reg('claudeHelper.clearQueueSearch', () => queueProvider.setFilter(''));
-  reg('claudeHelper.showHelp', () => vscode.commands.executeCommand(
+  reg('agentHub.clearQueueSearch', () => queueProvider.setFilter(''));
+  reg('agentHub.showHelp', () => vscode.commands.executeCommand(
     'markdown.showPreview', vscode.Uri.file(path.join(context.extensionPath, 'HELP.md'))));
 
   // favourites commands
-  reg('claudeHelper.refreshFavourites', () => favProvider.refresh());
-  reg('claudeHelper.addFavourite', async () => {
+  reg('agentHub.refreshFavourites', () => favProvider.refresh());
+  reg('agentHub.addFavourite', async () => {
     const picks = await vscode.window.showOpenDialog({
       canSelectFiles: false, canSelectFolders: true, canSelectMany: true,
       openLabel: 'Add to Claude Favourites',
@@ -178,41 +164,41 @@ function activate(context) {
     if (!picks) return;
     for (const uri of picks) await addFavouriteFromUri(context, uri, { askLabel: picks.length === 1 });
   });
-  reg('claudeHelper.addCurrentWorkspace', async () => {
+  reg('agentHub.addCurrentWorkspace', async () => {
     const folders = vscode.workspace.workspaceFolders || [];
     if (!folders.length) { vscode.window.showInformationMessage('No workspace folder open.'); return; }
     for (const f of folders) await addFavouriteFromUri(context, f.uri, { askLabel: folders.length === 1 });
   });
-  reg('claudeHelper.addFromExplorer', (uri) => addFavouriteFromUri(context, uri));
-  reg('claudeHelper.goToFolder', () => goToFolder(context));
-  reg('claudeHelper.folderSearchNewSubfolder', () => {
+  reg('agentHub.addFromExplorer', (uri) => addFavouriteFromUri(context, uri));
+  reg('agentHub.goToFolder', () => goToFolder(context));
+  reg('agentHub.folderSearchNewSubfolder', () => {
     const open = currentFolderSearch();
     if (open && open.dir) open.run('newFolder', open.dir);
   });
-  reg('claudeHelper.newSession', () => newScratchSession());
-  reg('claudeHelper.quickSession', () => newScratchSession({ quick: true }));
-  reg('claudeHelper.resumeClaude', (fav) => resumeClaude(fav));
-  reg('claudeHelper.startClaudeFromExplorer', (uri) => startClaudeFromUri(uri));
-  reg('claudeHelper.newFolderAndStartClaudeFromExplorer', (uri) => newFolderAndStartClaudeFromUri(uri));
-  reg('claudeHelper.resumeClaudeFromExplorer', (uri) => resumeClaudeFromUri(uri));
+  reg('agentHub.newSession', () => newScratchSession());
+  reg('agentHub.quickSession', () => newScratchSession({ quick: true }));
+  reg('agentHub.resumeClaude', (fav) => resumeClaude(fav));
+  reg('agentHub.startClaudeFromExplorer', (uri) => startClaudeFromUri(uri));
+  reg('agentHub.newFolderAndStartClaudeFromExplorer', (uri) => newFolderAndStartClaudeFromUri(uri));
+  reg('agentHub.resumeClaudeFromExplorer', (uri) => resumeClaudeFromUri(uri));
   // The folder actions are shared by Favourites and Recent Sessions; folderOf turns
   // either row into the { path, label } they act on.
   const folderAction = (fn) => (arg) => { const f = folderOf(arg); if (f) fn(f); };
-  reg('claudeHelper.startClaude', folderAction(startClaude));
-  reg('claudeHelper.openTerminalHere', folderAction((f) => {
+  reg('agentHub.startClaude', folderAction(startClaude));
+  reg('agentHub.openTerminalHere', folderAction((f) => {
     const t = vscode.window.createTerminal({ name: f.label || path.basename(f.path), cwd: f.path });
     t.show();
     moveTerminalTabToEnd(t);
   }));
-  reg('claudeHelper.openFolder', folderAction((f) =>
+  reg('agentHub.openFolder', folderAction((f) =>
     vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(f.path), { forceNewWindow: true })));
-  reg('claudeHelper.revealInExplorer', folderAction((f) =>
+  reg('agentHub.revealInExplorer', folderAction((f) =>
     vscode.commands.executeCommand('revealInExplorer', vscode.Uri.file(f.path))));
-  reg('claudeHelper.copyPath', folderAction((f) => {
+  reg('agentHub.copyPath', folderAction((f) => {
     vscode.env.clipboard.writeText(f.path);
     vscode.window.setStatusBarMessage(`Copied: ${f.path}`, 2000);
   }));
-  reg('claudeHelper.renameFavourite', async (fav) => {
+  reg('agentHub.renameFavourite', async (fav) => {
     if (!fav) return;
     const value = await vscode.window.showInputBox({
       prompt: 'New display name (empty to use folder name)',
@@ -227,7 +213,7 @@ function activate(context) {
     await setFavs(context, favs);
     favProvider.refresh();
   });
-  reg('claudeHelper.removeFavourite', (fav) => removeFavourite(fav, false));
+  reg('agentHub.removeFavourite', (fav) => removeFavourite(fav, false));
   const move = async (fav, delta) => {
     if (!fav) return;
     const favs = getFavs(context);
@@ -239,12 +225,12 @@ function activate(context) {
     await setFavs(context, favs);
     favProvider.refresh();
   };
-  reg('claudeHelper.moveUp', (fav) => move(fav, -1));
-  reg('claudeHelper.moveDown', (fav) => move(fav, 1));
+  reg('agentHub.moveUp', (fav) => move(fav, -1));
+  reg('agentHub.moveDown', (fav) => move(fav, 1));
 
   // session commands
-  reg('claudeHelper.refreshSessions', () => sessProvider.refresh());
-  reg('claudeHelper.searchSessions', () => {
+  reg('agentHub.refreshSessions', () => sessProvider.refresh());
+  reg('agentHub.searchSessions', () => {
     const box = vscode.window.createInputBox();
     box.title = 'Search Recent Sessions';
     box.placeholder = 'Filter by anything in the tooltip: name, prompt, last reply, folder, id…';
@@ -254,9 +240,9 @@ function activate(context) {
     box.onDidHide(() => box.dispose());
     box.show();
   });
-  reg('claudeHelper.clearSessionSearch', () => sessProvider.setFilter(''));
-  reg('claudeHelper.resumeSession', (node) => resumeSessionNode(node));
-  reg('claudeHelper.resumeAndCompact', (node) => resumeAndCompactNode(node));
+  reg('agentHub.clearSessionSearch', () => sessProvider.setFilter(''));
+  reg('agentHub.resumeSession', (node) => resumeSessionNode(node));
+  reg('agentHub.resumeAndCompact', (node) => resumeAndCompactNode(node));
   const setPinned = async (node, on) => {
     if (!node || node.kind !== 'session') return;
     const pinned = pinnedSessions();
@@ -264,9 +250,9 @@ function activate(context) {
     await setPinnedSessions(pinned);
     sessProvider.refresh();
   };
-  reg('claudeHelper.pinSession', (node) => setPinned(node, true));
-  reg('claudeHelper.unpinSession', (node) => setPinned(node, false));
-  reg('claudeHelper.hideSession', async (node) => {
+  reg('agentHub.pinSession', (node) => setPinned(node, true));
+  reg('agentHub.unpinSession', (node) => setPinned(node, false));
+  reg('agentHub.hideSession', async (node) => {
     if (!node || node.kind !== 'session') return;
     const s = node.session;
     const hidden = hiddenSessions();
@@ -280,14 +266,14 @@ function activate(context) {
     await setHiddenSessions(back);
     sessProvider.refresh();
   });
-  reg('claudeHelper.showHiddenSessions', async () => {
+  reg('agentHub.showHiddenSessions', async () => {
     const n = hiddenSessions().size;
     if (!n) { vscode.window.showInformationMessage('No hidden sessions.'); return; }
     await setHiddenSessions(new Set());
     sessProvider.refresh();
     vscode.window.showInformationMessage(`Restored ${n} hidden session${n === 1 ? '' : 's'}.`);
   });
-  reg('claudeHelper.deleteSession', async (node) => {
+  reg('agentHub.deleteSession', async (node) => {
     if (!node || node.kind !== 'session') return;
     const s = node.session;
     const pick = await vscode.window.showWarningMessage(
@@ -297,23 +283,23 @@ function activate(context) {
     );
     if (pick !== 'Delete') return;
     try { fs.unlinkSync(s.file); }
-    catch (e) { vscode.window.showErrorMessage(`Claude Code Helper: delete failed — ${e.message}`); return; }
+    catch (e) { vscode.window.showErrorMessage(`Agent Hub: delete failed — ${e.message}`); return; }
     const hidden = hiddenSessions();
     if (hidden.delete(s.id)) await setHiddenSessions(hidden);
     sessProvider.refresh();
     vscode.window.setStatusBarMessage(`Deleted session ${s.id}`, 3000);
   });
-  reg('claudeHelper.copySessionId', (node) => {
+  reg('agentHub.copySessionId', (node) => {
     if (!node || node.kind !== 'session') return;
     vscode.env.clipboard.writeText(node.session.id);
     vscode.window.setStatusBarMessage(`Copied session id: ${node.session.id}`, 2000);
   });
-  reg('claudeHelper.copySessionPath', (node) => {
+  reg('agentHub.copySessionPath', (node) => {
     if (!node || node.kind !== 'session') return;
     vscode.env.clipboard.writeText(node.session.file);
     vscode.window.setStatusBarMessage(`Copied: ${node.session.file}`, 2000);
   });
-  reg('claudeHelper.revealSessionFile', (node) => {
+  reg('agentHub.revealSessionFile', (node) => {
     if (!node || node.kind !== 'session') return;
     vscode.commands.executeCommand('revealInExplorer', vscode.Uri.file(node.session.file));
   });
@@ -321,18 +307,18 @@ function activate(context) {
   // Same link from Recent Sessions. It re-resolves at click time instead of trusting
   // the render-time node: the index moves on (a session ends, a terminal gets reused
   // for another task) while the tree sits there.
-  reg('claudeHelper.openSessionTask', (node) => {
+  reg('agentHub.openSessionTask', (node) => {
     if (!node || node.kind !== 'session') return;
     openAsanaTask(asanaTaskFor(node.session.id, node.session.cwd) || node.session.asana);
   });
 
   // bookmarks commands
-  reg('claudeHelper.refreshBookmarks', () => bookmarksProvider.refresh());
-  reg('claudeHelper.addBookmark', () => addBookmark());
-  reg('claudeHelper.editBookmark', (bm) => editBookmark(bm));
-  reg('claudeHelper.removeBookmark', (bm) => removeBookmark(bm));
-  reg('claudeHelper.openBookmark', (bm) => openBookmark(bm));
-  reg('claudeHelper.openBookmarksFile', async () => {
+  reg('agentHub.refreshBookmarks', () => bookmarksProvider.refresh());
+  reg('agentHub.addBookmark', () => addBookmark());
+  reg('agentHub.editBookmark', (bm) => editBookmark(bm));
+  reg('agentHub.removeBookmark', (bm) => removeBookmark(bm));
+  reg('agentHub.openBookmark', (bm) => openBookmark(bm));
+  reg('agentHub.openBookmarksFile', async () => {
     const file = ensureBookmarksFile();
     await vscode.window.showTextDocument(vscode.Uri.file(file));
   });
@@ -356,7 +342,7 @@ function activate(context) {
     return pick && pick.terminal;
   };
 
-  reg('claudeHelper.revealTabCwd', async (arg, ctx) => {
+  reg('agentHub.revealTabCwd', async (arg, ctx) => {
     const t = await pickTabTerminal(arg, ctx);
     if (!t) return;
     const cwd = getTerminalCwd(t);
@@ -365,7 +351,7 @@ function activate(context) {
   });
 
   // Same link off the tab, re-resolved at click time for the same reason.
-  reg('claudeHelper.openTabTask', async (arg, ctx) => {
+  reg('agentHub.openTabTask', async (arg, ctx) => {
     const t = await pickTabTerminal(arg, ctx);
     if (!t) return;
     const task = terminalAsanaTask(t, getTerminalCwd(t));
@@ -374,7 +360,7 @@ function activate(context) {
   });
 
 
-  reg('claudeHelper.revealActiveTerminalCwd', () => {
+  reg('agentHub.revealActiveTerminalCwd', () => {
     const t = vscode.window.activeTerminal;
     if (!t) { vscode.window.showInformationMessage('No active terminal.'); return; }
     const cwd = getTerminalCwd(t);
@@ -397,7 +383,7 @@ function activate(context) {
     // sessions to repaint so a reconnected Claude TUI isn't left frozen on a stale frame.
     vscode.window.onDidChangeWindowState((s) => { if (s.focused) redrawDtachSessions(); }),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (!e.affectsConfiguration('claudeHelper')) return;
+      if (!e.affectsConfiguration('agentHub') && !e.affectsConfiguration('claudeHelper')) return;
       forgetAsanaAvailable();
       forgetMailAvailable();
       publishAvailability();
@@ -406,6 +392,20 @@ function activate(context) {
       bookmarksProvider.refresh();
     })
   );
+
+  // Favourites, pinned and hidden sessions from Claude Code Helper (see lib/migrate.js).
+  // Tried twice: the old extension writes its export on its own activation, which may
+  // land after ours in the same reload.
+  for (const ms of [2000, 15000]) {
+    setTimeout(async () => {
+      try {
+        if (await importOldState(context.globalState)) {
+          favProvider.refresh(); sessProvider.refresh();
+          vscode.commands.executeCommand('setContext', 'agentHub.hasHiddenSessions', hiddenSessions().size > 0);
+        }
+      } catch (e) { console.error('Agent Hub: importing old state failed', e); }
+    }, ms);
+  }
 
   // Sessions: light periodic refresh (every 60s) so relative times and new sessions
   // appear; also sweep for ended date-coded scratch folders to auto-rename them.

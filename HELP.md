@@ -1,4 +1,6 @@
-# Claude Code Helper: cheat sheet
+# Agent Hub: cheat sheet
+
+Formerly "Claude Code Helper": settings are now `agentHub.*`, and an unset one falls back to its old `claudeHelper.*` value.
 
 ## 1. Queue buttons (New Task view)
 

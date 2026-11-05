@@ -1,5 +1,5 @@
 /*
- * dtdrain — lossy drain relay (Claude Code Helper)
+ * dtdrain — lossy drain relay (Agent Hub)
  *
  * Sits between `dtach -a` and a code-server terminal pty:
  *     dtach -a <sock> -E -z -r winch | dtdrain

@@ -9,22 +9,22 @@ const items = pkg.contributes.menus['view/item/context'];
 const whenFor = (cmd) => items.filter((i) => i.command === cmd);
 const matches = (cmd, v) => whenFor(cmd).some((i) => {
   const m = i.when.match(/viewItem =~ \/(.*?)\//);
-  return i.when.includes('claudeHelper.sessions') && m && new RegExp(m[1]).test(v);
+  return i.when.includes('agentHub.sessions') && m && new RegExp(m[1]).test(v);
 });
 const all = ['session', 'sessionLive', 'sessionAsana', 'sessionLiveAsana'];
 for (const c of ['startClaude', 'openTerminalHere', 'revealInExplorer', 'openFolder', 'copyPath'])
-  for (const v of all) check(`${c} on ${v}`, matches(`claudeHelper.${c}`, v));
-for (const v of all) check(`resumeAndCompact ${/Live/.test(v) ? 'absent' : 'present'} on ${v}`, matches('claudeHelper.resumeAndCompact', v) === !/Live/.test(v));
+  for (const v of all) check(`${c} on ${v}`, matches(`agentHub.${c}`, v));
+for (const v of all) check(`resumeAndCompact ${/Live/.test(v) ? 'absent' : 'present'} on ${v}`, matches('agentHub.resumeAndCompact', v) === !/Live/.test(v));
 const pinned = all.map((v) => `${v}Pinned`);
 for (const c of ['startClaude', 'resumeSession', 'hideSession', 'copySessionId'])
-  for (const v of pinned) check(`${c} on ${v}`, matches(`claudeHelper.${c}`, v));
-for (const v of all) check(`pin on ${v}, unpin not`, matches('claudeHelper.pinSession', v) && !matches('claudeHelper.unpinSession', v));
-for (const v of pinned) check(`unpin on ${v}, pin not`, matches('claudeHelper.unpinSession', v) && !matches('claudeHelper.pinSession', v));
+  for (const v of pinned) check(`${c} on ${v}`, matches(`agentHub.${c}`, v));
+for (const v of all) check(`pin on ${v}, unpin not`, matches('agentHub.pinSession', v) && !matches('agentHub.unpinSession', v));
+for (const v of pinned) check(`unpin on ${v}, pin not`, matches('agentHub.unpinSession', v) && !matches('agentHub.pinSession', v));
 const cmds = pkg.contributes.commands.map((c) => c.command);
-check('commands declared', !cmds.includes('claudeHelper.newSessionHere') && cmds.includes('claudeHelper.resumeAndCompact'));
+check('commands declared', !cmds.includes('agentHub.newSessionHere') && cmds.includes('agentHub.resumeAndCompact'));
 const grp = (c) => whenFor(c).find((i) => !i.group.startsWith('inline')).group;
-check('run group: start, resume, compact', grp('claudeHelper.startClaude') === '1_run@1' && grp('claudeHelper.resumeSession') === '1_run@2' && grp('claudeHelper.resumeAndCompact') === '1_run@3');
-const hover = (view, order) => order.every((c, n) => whenFor(`claudeHelper.${c}`).some((i) => i.group === `inline@${n + 1}` && i.when.includes(`view == claudeHelper.${view}`)));
+check('run group: start, resume, compact', grp('agentHub.startClaude') === '1_run@1' && grp('agentHub.resumeSession') === '1_run@2' && grp('agentHub.resumeAndCompact') === '1_run@3');
+const hover = (view, order) => order.every((c, n) => whenFor(`agentHub.${c}`).some((i) => i.group === `inline@${n + 1}` && i.when.includes(`view == agentHub.${view}`)));
 check('hover buttons in Recent Sessions: resume, start, reveal', hover('sessions', ['resumeSession', 'startClaude', 'revealInExplorer']));
 check('hover buttons in Favourites: resume, start, reveal', hover('favourites', ['resumeClaude', 'startClaude', 'revealInExplorer']));
 process.exit(failed ? 1 : 0);
