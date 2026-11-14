@@ -18,6 +18,8 @@ A queue button opens a checklist; tasks a live session is already working are le
 
 ⚡ Quick Session (title bar, beside refresh and help) starts a session straight away in a new ~/tasks/YYYY-MM-DD-HHMM folder: no prompt, no routing, for a question that belongs to no client or project. The folder takes the session's title once it ends.
 
+☁ Upload (title bar, beside ⚡) opens a small panel: click Choose files… or drop files, and they are saved to ~/transfer/YYYY-MM-DD (today's folder, the one #today points to). A name that already exists gets -2, -3 instead of being overwritten.
+
 Recent Sessions, right-click a row: Pin Session (keeps it in a Pinned group at the top, past the age and row limits, until you Unpin it), Resume and Compact (only on sessions that are not running: resumes it and runs `/compact`, to keep working on the same job with room again) and Start New Session Here (a fresh session in that row's folder, for a clean context; the old session is left alone). Favourites and Recent Sessions share one layout: on hover ▶ new session, ↻ resume, 📂 reveal the folder; right-click has the same Run and Folder groups (terminal, reveal, new window, copy folder path), then the session or favourite specifics.
 
 ## 2. Queue view

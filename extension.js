@@ -28,6 +28,7 @@ const {
 } = require('./lib/sessions');
 const { cfg, shortHome } = require('./lib/shared');
 const { startTabLabelWatcher } = require('./lib/tablabels');
+const { openUploadPanel } = require('./lib/upload');
 const {
   createTabStateProvider, startTabStateWatcher, tabStateSeedTerminals, tabStateSweepStale, tabStateTerminalClosed, tabStateTerminalFocused, tabStateTerminalOpened,
 } = require('./lib/tabstate');
@@ -177,6 +178,7 @@ function activate(context) {
   });
   reg('agentHub.newSession', () => newScratchSession());
   reg('agentHub.quickSession', () => newScratchSession({ quick: true }));
+  reg('agentHub.uploadToToday', () => openUploadPanel());
   reg('agentHub.resumeClaude', (fav) => resumeClaude(fav));
   reg('agentHub.startClaudeFromExplorer', (uri) => startClaudeFromUri(uri));
   reg('agentHub.newFolderAndStartClaudeFromExplorer', (uri) => newFolderAndStartClaudeFromUri(uri));
