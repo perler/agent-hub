@@ -122,10 +122,10 @@ const line = (input, pt, ft, corrected = true, fk = 'session') => JSON.stringify
   const fb2 = nt.routingFeedback(targets);
   check('vanished target dropped, none kept', fb2.length === 1 && fb2[0].startsWith('"nothing" → kind session, target none'), fb2);
 
-  // 10. Cap 20, and only the log tail is read.
-  fs.writeFileSync(LOG, Array.from({ length: 30 }, (_, i) => line('in' + i, 'client:BB', 'client:CC')).join(''));
+  // 10. Cap 50, and only the log tail is read.
+  fs.writeFileSync(LOG, Array.from({ length: 60 }, (_, i) => line('in' + i, 'client:BB', 'client:CC')).join(''));
   const fb3 = nt.routingFeedback(targets);
-  check('capped at 20, newest first', fb3.length === 20 && fb3[0].startsWith('"in29"') && fb3[19].startsWith('"in10"'), fb3.length);
+  check('capped at 50, newest first', fb3.length === 50 && fb3[0].startsWith('"in59"') && fb3[49].startsWith('"in10"'), fb3.length);
   const pad = line('padding', 'client:BB', 'client:BB', false).repeat(Math.ceil(300 * 1024 / 100));
   fs.writeFileSync(LOG, line('ancient', 'client:BB', 'client:CC') + pad + line('recent', 'client:BB', 'client:CC'));
   const fb4 = nt.routingFeedback(targets);
