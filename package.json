@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.83.0",
+  "version": "0.84.0",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -41,7 +41,7 @@
         },
         {
           "id": "agentHub.sessions",
-          "name": "Recent Sessions"
+          "name": "Sessions"
         },
         {
           "id": "agentHub.bookmarks",
@@ -725,7 +725,7 @@
         "agentHub.sessionsMaxAgeDays": {
           "type": "number",
           "default": 7,
-          "description": "Only show sessions modified within the last N days in Recent Sessions."
+          "description": "Only show sessions modified within the last N days in Sessions."
         },
         "agentHub.sessionsExcludePaths": {
           "type": "array",

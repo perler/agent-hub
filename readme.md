@@ -9,7 +9,7 @@ A sidebar for running Claude Code out of VS Code / code-server. Four panels:
    The card waits for Enter (or 🚀 Go); ⇧Tab picks another folder, Esc goes back.
 2. **Favourites** — bookmarked directories; start or resume a session in one click.
    Resuming a folder with several sessions opens a picker.
-3. **Recent Sessions** — every Claude session on the machine, newest first, searchable by anything its tooltip shows,
+3. **Sessions** — every Claude session on the machine, newest first, searchable by anything its tooltip shows,
    with resume. Right-click a row for Resume and Compact (not-running sessions: resumes, then runs `/compact`)
    and Start New Session Here (fresh session in that row's folder; the old one is left alone).
 4. **Bookmarks** — URLs, opened in the browser or in a tab inside the editor.
@@ -81,8 +81,8 @@ highlighted row. Uses `fd` (or
 | `agentHub.folderSearchAction` | `reveal` | What Enter does in Go to Folder… |
 | `agentHub.tabStateDecorations` | `true` | Show working/waiting/idle badges on Claude terminal tabs (needs the hook below) |
 | `agentHub.tabStateTrace` | `false` | Log each tab's computed badge to `~/.cache/claude-tab-state.exttrace` |
-| `agentHub.sessionsMaxAgeDays` | `7` | Recent Sessions only lists sessions touched in the last N days |
-| `agentHub.sessionsMaxItems` | `100` | Cap on the Recent Sessions list |
+| `agentHub.sessionsMaxAgeDays` | `7` | Sessions only lists sessions touched in the last N days |
+| `agentHub.sessionsMaxItems` | `100` | Cap on the Sessions list |
 | `agentHub.scratchDir` | `~/tasks` | Base directory for a new, unnamed session |
 | `agentHub.autoRenameScratchSessions` | `true` | Rename a finished scratch folder to a slug of Claude's own session title |
 | `agentHub.useTmux` | `true` | Run sessions inside tmux, so they survive a reload and are reachable from Claude Mobile |
