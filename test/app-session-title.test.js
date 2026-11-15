@@ -22,7 +22,9 @@ function session(records) {
   return readSessionMeta(f);
 }
 const pad = { type: 'queue-operation', operation: 'dequeue', content: 'x'.repeat(17000) };
-const user = (t, cwd) => ({ type: 'user', cwd, timestamp: '2026-11-15T07:00:00Z', message: { content: t } });
+const user = (t, cwd, app = true) => ({
+  type: 'user', cwd, timestamp: '2026-11-15T07:00:00Z', message: { content: t }, ...(app ? { clientPlatform: 'ios' } : {}),
+});
 
 let failed = 0;
 const check = (name, c, d) => { console.log(`${c ? 'PASS' : 'FAIL'} ${name}${c ? '' : ' — ' + JSON.stringify(d)}`); if (!c) failed++; };
@@ -49,7 +51,15 @@ m = session([
 ]);
 check('a real /rename still wins', m.title === 'My renamed session', m);
 
-m = session([{ type: 'custom-title', customTitle: 'home/work' }, user('/inbox-zero', '/home/work')]);
+m = session([
+  { type: 'custom-title', customTitle: 'tasks/tst001-patch' },
+  { type: 'queue-operation', operation: 'enqueue', content: 'UNATTENDED autonomous run on an Asana task' },
+  user('UNATTENDED autonomous run on an Asana task', '/home/work/tasks/tst001-patch', false),
+]);
+check('headless queued run keeps its folder title', m.title === 'tasks/tst001-patch', m);
+check('headless queued run prompt still searchable', m.firstUserMsg === 'UNATTENDED autonomous run on an Asana task', m);
+
+m = session([{ type: 'custom-title', customTitle: 'home/work' }, user('/inbox-zero', '/home/work', false)]);
 check('CLI session without queued prompt keeps path title', m.title === 'home/work', m);
 
 fs.rmSync(tmp, { recursive: true, force: true });
