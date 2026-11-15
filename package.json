@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.84.0",
+  "version": "0.84.1",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -126,7 +126,7 @@
       },
       {
         "command": "agentHub.quickSession",
-        "title": "Quick Session (Scratch)",
+        "title": "Quick Session (new folder in tasks)",
         "icon": "$(zap)",
         "category": "Agent Hub"
       },
