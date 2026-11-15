@@ -4,6 +4,9 @@ A sidebar for running Claude Code out of VS Code / code-server. Four panels:
 
 1. **New Task** — a text box that starts a session. It works out where the work belongs
    (a client, a project, or a fresh scratch folder), names the session and opens it.
+   Type a question (a client shortcode in front routes it), or paste an Asana task's name
+   or a mail's subject: the box looks both up and says on its card which it found.
+   The card waits for Enter (or 🚀 Go); ⇧Tab picks another folder, Esc goes back.
 2. **Favourites** — bookmarked directories; start or resume a session in one click.
    Resuming a folder with several sessions opens a picker.
 3. **Recent Sessions** — every Claude session on the machine, newest first, searchable by anything its tooltip shows,
@@ -95,7 +98,7 @@ highlighted row. Uses `fd` (or
 | `agentHub.asanaCommand` | `~/tools/asana/asana` | Asana CLI. **Absent means the Asana panels and buttons are hidden.** |
 | `agentHub.agentIndexPath` | `~/.claude/agent-sessions.json` | Index of helper-launched tmux agent sessions (the bridge no longer writes it). Open Asana Task finds bridge sessions via `claude agents --json` + the `.asana-claude.json` marker in their directory |
 | `agentHub.agentTmuxSocket` | `claude` | tmux socket (`-L`) the bridge's sessions use |
-| `agentHub.mailLookupCommand` | (site-specific) | Resolves an `email <subject>` New Task entry to the actual mail |
+| `agentHub.mailLookupCommand` | (site-specific) | Resolves a pasted mail subject (or an `email <subject>` entry) to the actual mail |
 | `agentHub.mailInboxCommand` | (site-specific) | Lists the inbox mail addressed to us; **absent means no ✉️ Mail button** |
 
 ### Scrollback of a dtach session
