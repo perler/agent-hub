@@ -16,4 +16,8 @@ check('reply prefix on the entry is ignored', p('Re:  Access to servers', { subj
 check('shared words are not a match', !p('lets do the weekly billing', { subject: 'Weekly billing report' }));
 check('short entries never match', !p('ebay sale', { subject: 'ebay sale 123' }));
 check('no mail, no match', !p('Druckerproblem', null));
+const amazon = { subject: 'Bestellt: „Insta360 Link 2C...“' };
+check('shortened subject pasted as is', p('Bestellt: „Insta360 Link 2C...“', amazon));
+check('… and ... are the same ellipsis', p('Bestellt: „Insta360 Link 2C…“', amazon));
+check('Gmail cut a longer subject', p('Bestellt: „Insta360 Link 2C…', { subject: 'Bestellt: „Insta360 Link 2C Webcam“' }));
 process.exit(failed ? 1 : 0);
