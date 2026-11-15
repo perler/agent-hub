@@ -1,17 +1,15 @@
 # Agent Hub
 
-A sidebar for running Claude Code out of VS Code / code-server. Five panels:
+A sidebar for running Claude Code out of VS Code / code-server. Four panels:
 
 1. **New Task** — a text box that starts a session. It works out where the work belongs
    (a client, a project, or a fresh scratch folder), names the session and opens it.
-2. **Queue** — one row per task a queue button started as a background session, with its
-   state. Only there when the Asana CLI is installed; see "The Queue view" below.
-3. **Favourites** — bookmarked directories; start or resume a session in one click.
+2. **Favourites** — bookmarked directories; start or resume a session in one click.
    Resuming a folder with several sessions opens a picker.
-4. **Recent Sessions** — every Claude session on the machine, newest first, searchable by anything its tooltip shows,
+3. **Recent Sessions** — every Claude session on the machine, newest first, searchable by anything its tooltip shows,
    with resume. Right-click a row for Resume and Compact (not-running sessions: resumes, then runs `/compact`)
    and Start New Session Here (fresh session in that row's folder; the old one is left alone).
-5. **Bookmarks** — URLs, opened in the browser or in a tab inside the editor.
+4. **Bookmarks** — URLs, opened in the browser or in a tab inside the editor.
 
 Replaces the standalone `claude-favourites` and `terminal-tree` extensions.
 
@@ -87,7 +85,7 @@ highlighted row. Uses `fd` (or
 | `agentHub.useTmux` | `true` | Run sessions inside tmux, so they survive a reload and are reachable from Claude Mobile |
 | `agentHub.useDtach` | `true` | With `useTmux` off, run them inside dtach instead (this is what the tab badges need) |
 | `agentHub.dtachSocketDir` | `~/.claude/dtach` | Where the per-session dtach sockets live |
-| `agentHub.replayHistory` | `true` | Record new dtach sessions and replay the tail of the log into a tab on attach, so a tab (and every Queue session) has scrollback. Off: no recording, plain attach |
+| `agentHub.replayHistory` | `true` | Record new dtach sessions and replay the tail of the log into a tab on attach, so a tab has scrollback. Off: no recording, plain attach |
 | `agentHub.replayHistoryBytes` | `4194304` | How many bytes at the end of the log are replayed (logs are trimmed to this once they pass twice of it) |
 | `agentHub.bookmarksFile` | `` | Bookmarks JSON; empty means `~/.config/cc-bookmarks.json` |
 | `agentHub.clientsDir` | `~/clients` | Root of client folders the New Task box can route to |
@@ -104,8 +102,7 @@ highlighted row. Uses `fd` (or
 
 dtach keeps no history. A tab only has scrollback for output that arrived while it was
 attached; a fresh `dtach -a` gets just Claude's repaint, one screenful (measured: a tab
-attached from the start held all 150 lines, 31 KB; a fresh attach 313 bytes), and a Queue
-session, which starts without a tab, never has any. tmux would fix that, but its alternate
+attached from the start held all 150 lines, 31 KB; a fresh attach 313 bytes). tmux would fix that, but its alternate
 screen kills native wheel-scroll and select/copy, which is why this extension left it.
 
 With `agentHub.replayHistory` on, the dtach master runs under util-linux `script`
@@ -141,64 +138,14 @@ what is in that queue, or that inbox, right now.
 📅, ⏳ and 📥 open their queue as a checklist first, grouped by project. The ▶ on a row
 (shown on hover) opens that task at once in a Claude session of its own, in its own tab and
 folder (the folder already stamped with its gid when it has one, otherwise a new one under
-its client); the ↗ beside it opens the task in Asana. Ticked tasks go one of two ways, by the two buttons in the title bar: 💬 walks
-just the ticked tasks in one inbox-zero session (`only <gids>`; nothing ticked walks the
-whole queue), ☰ puts each ticked task into the Queue view with a session of its own. VS
-Code's own OK cannot be hidden and does the same as ☰. Esc starts nothing. A task that
-already has a row in the Queue view with a live session is not started a second time.
+its client); the ↗ beside it opens the task in Asana. Tick tasks, then Enter (or the 💬 in the title bar)
+walks just the ticked tasks in one inbox-zero session (`only <gids>`; nothing ticked walks the
+whole queue). Esc starts nothing.
 A task some live Claude session is already working is not in the checklist at all (the
 title says how many were left out): its session runs in a folder stamped with its gid, or
 its transcript opens with the `This is Asana task "…" (<gid>)` line ▶ writes, which is
 the only trace when the task runs in a repo folder, or it is a 💬 walk whose
 `/inbox-zero <scope> only <gids>` names the task (a walk of the whole queue hides nothing).
-
-The task sessions run **without a terminal tab** (see below), so thirty tasks do not put
-thirty tabs in front of you. Each is told to check first whether its task is still real —
-answered since, fixed since, stale — and if it can simply be closed, to say so and ask
-before doing anything else. When the dtach mode is off (`agentHub.useTmux` on,
-`agentHub.useDtach` off, or the terminal mode not `internal`) there is no such thing as
-a session without a tab, and a ticked task gets a tab instead, with a 📌 in front of its
-name.
-
-## The Queue view
-
-The **Queue** panel sits under New Task. One row per task, the task's name as the label
-and the state plus the session's folder as the description, sorted by what needs you:
-`? asking` (the session is asking you something), `! finished` (a turn ended and you have
-not looked), `needs folder`, `* working`, `queued`, then `seen` and `ended`. The state comes
-from the same two sources as the tab badges — the hook's state file per `CCH_TAB_ID` and
-the CLI's own live session files — plus two states only the panel knows: `queued` (not
-started yet) and `ended` (the process is gone). The panel repaints on the tab-state
-refresh, so it costs no polling loop of its own. The number on the panel's badge is the
-rows asking or finished and unread.
-
-At most **five sessions work at once** (a constant, `MAX_WORKING` in `lib/queue.js`, not a
-setting). The rest are `queued` and start in queue order as soon as a running one asks,
-finishes or dies. A task's folder is worked out when it starts. One the routing table
-cannot place (its project names no client) does not stop the queue: the row reads
-`needs folder`, and clicking it asks for the folder, after which it starts as soon as a slot
-is free. A folder that already holds a session for the task resumes it, with no tab too.
-
-A session started this way is only the dtach master that `agentHub.useDtach` already
-uses, started from the extension host with the same claude.slice scope and memory limits,
-the same runner script and claude flags, and `CCH_TAB_ID` in its environment, so the hooks
-keep writing the tab-state file. Clicking a row attaches a terminal tab to that session's
-socket (`📌 <folder>`, the same attach line as everywhere else, drain relay included) or
-shows the tab that is already attached. Closing the tab of a working or asking session leaves it
-running, as closing any dtach attach does. Closing the tab of a session that sits idle after
-a finished turn (`! finished` or `seen`) ends that session and removes its row; only a close
-by the user counts, never the terminal teardown of a window reload. Removing a row with its
-session closes its tab too. A row that is `ended` cannot be attached; resume its
-folder from Recent Sessions.
-
-Row actions: the link button opens the Asana task; the close button removes the row, and
-asks first when its session is still alive, offering to remove it while it keeps running
-or to kill it too. **Clear Finished** in the panel header removes every `ended` row.
-Rows are kept in `~/.cache/claude-code-helper/queue.json`, one file shared by every window,
-so all windows show the same list and a window reload leaves it as it was: sessions that are
-still running come back with their real state, and rows that were still queued start again.
-Starting a row is a claim written to that file, so two windows never start the same task; a
-claim whose window went away before a session came up returns to `queued` after 45 seconds.
 
 Whatever a button starts is named after the button: the session's tab reads
 `✉️ invoice-question`, `📅 inbox-zero · Today`, `📁 inbox-zero · SFF EDV` — the icon

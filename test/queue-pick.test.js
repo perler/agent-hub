@@ -3,11 +3,10 @@
 // lib/newtask.js, a fake `asana` CLI printing a fixed queue, and a temp clients tree.
 // VS Code and the terminal launch are stubbed; every launch is recorded instead.
 //
-// What it pins down (2026-10-14 layout: two title-bar buttons, ▶/↗ per row): 💬 walks the
-// ticked tasks in one inbox-zero session, nothing ticked the whole queue; ☰ — and OK, which
-// VS Code will not hide — opens a tab per ticked task in its client's folder (the one stamped
-// with its gid when there is one), or hands them to the Queue view in the tab-less mode; OK
-// with nothing ticked starts nothing; ▶ opens one row now; ↗ opens Asana and keeps the list.
+// What it pins down (2026-11-15 layout: one title-bar button, ▶/↗ per row): 💬 and Enter walk
+// the ticked tasks in one inbox-zero session, nothing ticked the whole queue; ▶ opens one
+// row now in its client's folder (the one stamped with its gid when there is one); ↗ opens
+// Asana and keeps the list.
 //
 // Run: node test/queue-pick.test.js
 const fs = require('fs'), path = require('path'), os = require('os'), Module = require('module');
@@ -63,18 +62,12 @@ const vscode = {
 };
 let lastQp = null;
 const launches = [];
-let tabless = false;
-const queued = [];   // what the (stubbed) Queue view was handed, one array of gids per call
 const origLoad = Module._load;
 Module._load = function (req, parent, isMain) {
   if (req === 'vscode') return vscode;
-  // Each fake terminal's shell comes up 50 ms after its launch; `ready` records that, so
-  // the test can see whether the next tab waited for it.
-  if (req === './queue') return { addTasks: (tasks) => { queued.push(tasks.map((t) => t.gid)); return tasks.length; }, setQueueHooks: () => {} };
-  if (req === './launch') return { tablessAvailable: () => tabless, startDtachMaster: async () => { throw new Error('unexpected tabless launch'); }, launchClaude: async (fav, resume, opts) => {
-    const l = { dir: fav.path, label: fav.label, resume, ...opts, ready: false, prevReady: launches.length ? launches[launches.length - 1].ready : true };
-    launches.push(l);
-    return { processId: new Promise((r) => setTimeout(() => { l.ready = true; r(4242); }, 50)) };
+  if (req === './launch') return { launchClaude: async (fav, resume, opts) => {
+    launches.push({ dir: fav.path, label: fav.label, resume, ...opts });
+    return { processId: 4242 };
   } };
   return origLoad.apply(this, arguments);
 };
@@ -94,7 +87,7 @@ function check(name, cond, detail) {
   check('project cache readable by the routing table', projects.length === 2, projects);
   const tasks = (qp) => qp.items.filter((i) => i.task);
   const tick = (qp, ...gids) => { qp.selectedItems = tasks(qp).filter((i) => gids.includes(i.task.gid)); };
-  const [walkBtn, queueBtn] = [0, 1];
+  const walkBtn = 0;
 
   // 1. Tick two, 💬: one inbox-zero session over just those two, in home.
   script = (qp, h) => { tick(qp, '1218000000111', '1218000000222'); h.button(qp.buttons[walkBtn]); };
@@ -111,26 +104,30 @@ function check(name, cond, detail) {
   await nt.pickFromQueue('input');
   check('💬 with nothing ticked = full walk', launches.length === 1 && launches[0].initialPrompt === '/inbox-zero input', launches);
 
-  // 3. Tick two, ☰ (visible-tab mode): a tab each, in its client's folder.
-  script = (qp, h) => { tick(qp, '1218000000111', '1218000000222'); h.button(qp.buttons[queueBtn]); };
-  launches.length = 0;
-  check('☰ reports a start', await nt.pickFromQueue('today+input'));
-  const [a, b] = launches;
-  check('☰ = two task tabs, no walk', launches.length === 2 && launches.every((l) => l.namePrefix === '📌 '), launches.map((l) => l.dir));
-  check('new task gets a slug folder under its client', a && a.dir === path.join(clients, 'BB', 'printer-offline'), a && a.dir);
-  check('task prompt names the task and forbids a copy', a && /Asana task "✨ Printer offline again" \(1218000000111\).*do NOT create a second one/.test(a.initialPrompt), a && a.initialPrompt);
-  check('task already stamped with its gid reuses its folder', b && b.dir === path.join(clients, 'RAH', 'old-work'), b && b.dir);
-  check('each tab opens only once the previous one has its shell', launches.every((l) => l.prevReady), launches.map((l) => l.prevReady));
-
-  // 4. OK does what ☰ does; with nothing ticked it starts nothing.
+  // 3. Enter walks exactly like 💬: the ticked tasks, or the whole queue.
   script = (qp, h) => { tick(qp, '1218000000333'); h.accept(); };
   launches.length = 0;
-  await nt.pickFromQueue('today');
-  check('OK with a tick = that task tab', launches.length === 1 && launches[0].namePrefix === '📌 ', launches);
+  check('Enter with a tick reports a start', await nt.pickFromQueue('today'));
+  check('Enter with a tick = one walk over only that gid', launches.length === 1
+    && launches[0].initialPrompt === '/inbox-zero today only 1218000000333', launches);
   script = (qp, h) => h.accept();
   launches.length = 0;
-  check('OK with nothing ticked reports nothing started', !(await nt.pickFromQueue('today')));
-  check('OK with nothing ticked launches nothing', launches.length === 0, launches);
+  await nt.pickFromQueue('today');
+  check('Enter with nothing ticked = full walk', launches.length === 1 && launches[0].initialPrompt === '/inbox-zero today', launches);
+  check('only the 💬 title button is left', lastQp.buttons.length === 1, lastQp.buttons);
+
+  // 4. ▶ on a row opens one task in its own tab in its client's folder.
+  script = (qp, h) => { const it = tasks(qp).find((i) => i.task.gid === '1218000000111'); h.item({ item: it, button: it.buttons[1] }); };
+  launches.length = 0;
+  await nt.pickFromQueue('today+input');
+  const [a] = launches;
+  check('▶ = one task tab, no walk', launches.length === 1 && a.namePrefix === '📌 ', launches.map((l) => l.dir));
+  check('new task gets a slug folder under its client', a && a.dir === path.join(clients, 'BB', 'printer-offline'), a && a.dir);
+  check('task prompt names the task and forbids a copy', a && /Asana task "✨ Printer offline again" \(1218000000111\).*do NOT create a second one/.test(a.initialPrompt), a && a.initialPrompt);
+  script = (qp, h) => { const it = tasks(qp).find((i) => i.task.gid === '1218000000222'); h.item({ item: it, button: it.buttons[1] }); };
+  launches.length = 0;
+  await nt.pickFromQueue('today+input');
+  check('task already stamped with its gid reuses its folder', launches[0] && launches[0].dir === path.join(clients, 'RAH', 'old-work'), launches[0] && launches[0].dir);
 
   // 5. ▶ on a row opens that task now, whatever is ticked.
   script = (qp, h) => { tick(qp, '1218000000111'); const it = tasks(qp).find((i) => i.task.gid === '1218000000333'); h.item({ item: it, button: it.buttons[1] }); };
@@ -143,18 +140,6 @@ function check(name, cond, detail) {
   launches.length = 0; opened.length = 0;
   check('↗ then Esc reports nothing started', !(await nt.pickFromQueue('today')));
   check('↗ opens the task in Asana', opened.length === 1 && /1218000000111$/.test(opened[0]) && launches.length === 0, { opened, launches });
-
-  // 7. Tab-less mode: ☰ hands the ticks to the Queue view, no tab; 💬 still walks.
-  tabless = true;
-  script = (qp, h) => { tick(qp, '1218000000111', '1218000000222'); h.button(qp.buttons[queueBtn]); };
-  launches.length = 0; queued.length = 0;
-  await nt.pickFromQueue('today+input');
-  check('tab-less: ☰ queues the ticks', queued.length === 1 && queued[0].join() === '1218000000111,1218000000222' && launches.length === 0, { queued, launches });
-  script = (qp, h) => h.button(qp.buttons[walkBtn]);
-  launches.length = 0; queued.length = 0;
-  await nt.pickFromQueue('input');
-  check('tab-less: 💬 = full walk, nothing queued', queued.length === 0 && launches.length === 1 && launches[0].initialPrompt === '/inbox-zero input', { queued, launches });
-  tabless = false;
 
   // 8. Waiting-on-event tasks: last, under their own separator, out of the title count.
   fs.writeFileSync(path.join(tmp, 'q.json'), JSON.stringify([waitingTask, ...queue]));

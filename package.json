@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.80.5",
+  "version": "0.81.0",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -36,11 +36,6 @@
           "initialSize": 1
         },
         {
-          "id": "agentHub.queue",
-          "name": "Queue",
-          "when": "agentHub.asanaAvailable"
-        },
-        {
           "id": "agentHub.favourites",
           "name": "Favourites"
         },
@@ -58,10 +53,6 @@
       {
         "view": "agentHub.favourites",
         "contents": "No favourites yet.\n[Add Favourite](command:agentHub.addFavourite)\n[Add Current Workspace](command:agentHub.addCurrentWorkspace)"
-      },
-      {
-        "view": "agentHub.queue",
-        "contents": "No queue sessions yet.\nPick tasks with 📅 Today, ⏳ Input or 📥 Both under New Task."
       },
       {
         "view": "agentHub.bookmarks",
@@ -126,6 +117,11 @@
         "command": "agentHub.refreshQueueCounts",
         "title": "Refresh Queue Counts",
         "icon": "$(refresh)",
+        "category": "Agent Hub"
+      },
+      {
+        "command": "agentHub.focusNewTask",
+        "title": "Show the New Task Box",
         "category": "Agent Hub"
       },
       {
@@ -220,16 +216,6 @@
         "icon": "$(clear-all)"
       },
       {
-        "command": "agentHub.searchQueue",
-        "title": "Search Queue",
-        "icon": "$(search)"
-      },
-      {
-        "command": "agentHub.clearQueueSearch",
-        "title": "Clear Queue Search",
-        "icon": "$(clear-all)"
-      },
-      {
         "command": "agentHub.resumeSession",
         "title": "Resume Session",
         "icon": "$(debug-rerun)"
@@ -287,26 +273,6 @@
         "icon": "$(link-external)"
       },
       {
-        "command": "agentHub.openQueueSession",
-        "title": "Open Session",
-        "icon": "$(plug)"
-      },
-      {
-        "command": "agentHub.openQueueTask",
-        "title": "Open Asana Task",
-        "icon": "$(link-external)"
-      },
-      {
-        "command": "agentHub.removeQueueRow",
-        "title": "Remove from List",
-        "icon": "$(close)"
-      },
-      {
-        "command": "agentHub.clearFinishedQueue",
-        "title": "Clear Finished",
-        "icon": "$(clear-all)"
-      },
-      {
         "command": "agentHub.addBookmark",
         "title": "Add Bookmark…",
         "icon": "$(add)",
@@ -344,7 +310,7 @@
       },
       {
         "command": "agentHub.showHelp",
-        "title": "Help: Queue, Badges, Unlock",
+        "title": "Help: Badges, Unlock",
         "icon": "$(question)",
         "category": "Agent Hub"
       }
@@ -353,6 +319,10 @@
       "commandPalette": [
         {
           "command": "agentHub.folderSearchNewSubfolder",
+          "when": "false"
+        },
+        {
+          "command": "agentHub.focusNewTask",
           "when": "false"
         }
       ],
@@ -391,21 +361,6 @@
           "command": "agentHub.refreshFavourites",
           "when": "view == agentHub.favourites",
           "group": "navigation@3"
-        },
-        {
-          "command": "agentHub.searchQueue",
-          "when": "view == agentHub.queue",
-          "group": "navigation@0"
-        },
-        {
-          "command": "agentHub.clearQueueSearch",
-          "when": "view == agentHub.queue && agentHub.queueFiltered",
-          "group": "navigation@1"
-        },
-        {
-          "command": "agentHub.clearFinishedQueue",
-          "when": "view == agentHub.queue",
-          "group": "navigation@2"
         },
         {
           "command": "agentHub.searchSessions",
@@ -573,36 +528,6 @@
           "command": "agentHub.deleteSession",
           "when": "view == agentHub.sessions && viewItem =~ /^session(Asana)?(Pinned)?$/",
           "group": "4_manage@2"
-        },
-        {
-          "command": "agentHub.openQueueSession",
-          "when": "view == agentHub.queue && viewItem == queueRowLive",
-          "group": "inline@1"
-        },
-        {
-          "command": "agentHub.openQueueTask",
-          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
-          "group": "inline@2"
-        },
-        {
-          "command": "agentHub.removeQueueRow",
-          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
-          "group": "inline@3"
-        },
-        {
-          "command": "agentHub.openQueueSession",
-          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
-          "group": "1_open@1"
-        },
-        {
-          "command": "agentHub.openQueueTask",
-          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
-          "group": "1_open@2"
-        },
-        {
-          "command": "agentHub.removeQueueRow",
-          "when": "view == agentHub.queue && viewItem =~ /^queueRow/",
-          "group": "9_destroy@1"
         },
         {
           "command": "agentHub.editBookmark",
@@ -845,7 +770,7 @@
         "agentHub.replayHistory": {
           "type": "boolean",
           "default": true,
-          "description": "dtach keeps no history, so a tab attached to a running session (and every Queue session, which starts without a tab) shows only one screenful. With this on, new sessions are recorded to <dtachSocketDir>/<session id>.log (via util-linux `script`) and the attach prints the tail of that log into the tab first, so you can scroll back through what you missed. Terminal queries are stripped from the replay. Off: no recording on new launches, plain attach."
+          "description": "dtach keeps no history, so a tab attached to a running session shows only one screenful. With this on, new sessions are recorded to <dtachSocketDir>/<session id>.log (via util-linux `script`) and the attach prints the tail of that log into the tab first, so you can scroll back through what you missed. Terminal queries are stripped from the replay. Off: no recording on new launches, plain attach."
         },
         "agentHub.replayHistoryBytes": {
           "type": "number",

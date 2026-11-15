@@ -37,7 +37,7 @@ const launches = [];
 const origLoad = Module._load;
 Module._load = function (req) {
   if (req === 'vscode') return vscode;
-  if (req === './launch') return { tablessAvailable: () => false, launchClaude: async (fav, resume, opts) => { launches.push({ label: fav.label, ...opts }); return true; } };
+  if (req === './launch') return { launchClaude: async (fav, resume, opts) => { launches.push({ label: fav.label, ...opts }); return true; } };
   return origLoad.apply(this, arguments);
 };
 const nt = require('../lib/newtask');

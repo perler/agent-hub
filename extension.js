@@ -19,9 +19,6 @@ const {
 const { AskViewProvider } = require('./lib/newtask');
 const { forgetMailAvailable } = require('./lib/mail');
 const { providers } = require('./lib/providers');
-const {
-  clearFinishedQueue, initQueue, openQueueSession, openQueueTask, queueTerminalClosed, removeQueueRow,
-} = require('./lib/queue');
 const { sessionTerminals } = require('./lib/session-registry');
 const {
   SessionsProvider, setExtCtx, getSessionCwd, hiddenSessions, pinnedSessions, resumeSessionNode, resumeAndCompactNode, setHiddenSessions, setPinnedSessions,
@@ -101,16 +98,8 @@ function activate(context) {
   context.subscriptions.push(vscode.window.registerWebviewViewProvider(
     'agentHub.ask', askProvider, { webviewOptions: { retainContextWhenHidden: true } }
   ));
+  context.subscriptions.push(askProvider);   // disposes the "task waiting" status bar item
   refreshAsanaProjects(12);   // warm the New Task routing table; never blocks a submit
-
-  // The Queue view: one row per task a queue button started as a tab-less session.
-  const queueProvider = initQueue();
-  const queueView = vscode.window.createTreeView('agentHub.queue', {
-    treeDataProvider: queueProvider, showCollapseAll: false,
-  });
-  queueProvider.view = queueView;
-  context.subscriptions.push(queueView);
-  context.subscriptions.push(vscode.window.onDidCloseTerminal((t) => queueTerminalClosed(t)));
 
   favProvider = new FavouritesProvider(context);
   setFavProvider(favProvider);
@@ -136,21 +125,7 @@ function activate(context) {
 
   const reg = (id, fn) => context.subscriptions.push(vscode.commands.registerCommand(id, fn));
   reg('agentHub.refreshQueueCounts', () => askProvider.refreshCounts());
-  reg('agentHub.openQueueSession', (row) => openQueueSession(row));
-  reg('agentHub.openQueueTask', (row) => openQueueTask(row));
-  reg('agentHub.removeQueueRow', (row) => removeQueueRow(row));
-  reg('agentHub.clearFinishedQueue', () => clearFinishedQueue());
-  reg('agentHub.searchQueue', () => {
-    const box = vscode.window.createInputBox();
-    box.title = 'Search Queue';
-    box.placeholder = 'Filter by anything in the tooltip: task name, folder, state, session id…';
-    box.value = queueProvider.filter;
-    box.onDidChangeValue((v) => queueProvider.setFilter(v));
-    box.onDidAccept(() => box.hide());
-    box.onDidHide(() => box.dispose());
-    box.show();
-  });
-  reg('agentHub.clearQueueSearch', () => queueProvider.setFilter(''));
+  reg('agentHub.focusNewTask', () => vscode.commands.executeCommand('agentHub.ask.focus'));
   reg('agentHub.showHelp', () => vscode.commands.executeCommand(
     'markdown.showPreview', vscode.Uri.file(path.join(context.extensionPath, 'HELP.md'))));
 

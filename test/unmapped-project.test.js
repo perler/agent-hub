@@ -20,8 +20,7 @@ const vscode = { QuickPickItemKind: { Separator: -1 }, workspace: { getConfigura
 const origLoad = Module._load;
 Module._load = function (req) {
   if (req === 'vscode') return vscode;
-  if (req === './queue') return { addTasks() {}, setQueueHooks() {} };
-  if (req === './launch') return { tablessAvailable: () => false, startDtachMaster: async () => null, launchClaude: async () => null };
+  if (req === './launch') return { launchClaude: async () => null };
   return origLoad.apply(this, arguments);
 };
 const asana = require('../lib/asana');

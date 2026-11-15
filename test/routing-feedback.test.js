@@ -47,7 +47,7 @@ const origLoad = Module._load;
 Module._load = function (req) {
   if (req === 'vscode') return vscode;
   if (req === '/home/work/tools/jev/jev.js') return { ask: () => Promise.resolve(null), shadow: () => {} };
-  if (req === './launch') return { tablessAvailable: () => false, startDtachMaster: async () => { throw new Error('unexpected'); }, launchClaude: async (fav, resume, opts) => { launches.push({ dir: fav.path, ...opts }); return true; } };
+  if (req === './launch') return { launchClaude: async (fav, resume, opts) => { launches.push({ dir: fav.path, ...opts }); return true; } };
   return origLoad.apply(this, arguments);
 };
 const nt = require('../lib/newtask');
