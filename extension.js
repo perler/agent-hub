@@ -141,11 +141,6 @@ function activate(context) {
     if (!picks) return;
     for (const uri of picks) await addFavouriteFromUri(context, uri, { askLabel: picks.length === 1 });
   });
-  reg('agentHub.addCurrentWorkspace', async () => {
-    const folders = vscode.workspace.workspaceFolders || [];
-    if (!folders.length) { vscode.window.showInformationMessage('No workspace folder open.'); return; }
-    for (const f of folders) await addFavouriteFromUri(context, f.uri, { askLabel: folders.length === 1 });
-  });
   reg('agentHub.addFromExplorer', (uri) => addFavouriteFromUri(context, uri));
   reg('agentHub.goToFolder', () => goToFolder(context));
   reg('agentHub.folderSearchNewSubfolder', () => {

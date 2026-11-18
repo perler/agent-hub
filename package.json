@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.85.6",
+  "version": "0.85.7",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -52,7 +52,7 @@
     "viewsWelcome": [
       {
         "view": "agentHub.favourites",
-        "contents": "No favourites yet.\n[Add Favourite](command:agentHub.addFavourite)\n[Add Current Workspace](command:agentHub.addCurrentWorkspace)"
+        "contents": "No favourites yet.\n[Add Favourite](command:agentHub.addFavourite)"
       },
       {
         "view": "agentHub.bookmarks",
@@ -82,12 +82,6 @@
         "command": "agentHub.addFavourite",
         "title": "Add Favourite…",
         "icon": "$(add)",
-        "category": "Agent Hub"
-      },
-      {
-        "command": "agentHub.addCurrentWorkspace",
-        "title": "Add Current Workspace",
-        "icon": "$(root-folder)",
         "category": "Agent Hub"
       },
       {
@@ -132,7 +126,7 @@
       },
       {
         "command": "agentHub.uploadToToday",
-        "title": "Upload to Today's Transfer Folder",
+        "title": "Upload Files",
         "icon": "$(cloud-upload)",
         "category": "Agent Hub"
       },
@@ -333,19 +327,14 @@
           "group": "navigation@3"
         },
         {
-          "command": "agentHub.addFavourite",
+          "command": "agentHub.refreshFavourites",
           "when": "view == agentHub.favourites",
           "group": "navigation@1"
         },
         {
-          "command": "agentHub.addCurrentWorkspace",
+          "command": "agentHub.addFavourite",
           "when": "view == agentHub.favourites",
           "group": "navigation@2"
-        },
-        {
-          "command": "agentHub.refreshFavourites",
-          "when": "view == agentHub.favourites",
-          "group": "navigation@3"
         },
         {
           "command": "agentHub.searchSessions",
@@ -358,22 +347,22 @@
           "group": "navigation@1"
         },
         {
-          "command": "agentHub.showHiddenSessions",
-          "when": "view == agentHub.sessions && agentHub.hasHiddenSessions",
+          "command": "agentHub.refreshSessions",
+          "when": "view == agentHub.sessions",
           "group": "navigation@2"
         },
         {
-          "command": "agentHub.refreshSessions",
-          "when": "view == agentHub.sessions",
+          "command": "agentHub.showHiddenSessions",
+          "when": "view == agentHub.sessions && agentHub.hasHiddenSessions",
           "group": "navigation@3"
         },
         {
-          "command": "agentHub.addBookmark",
+          "command": "agentHub.refreshBookmarks",
           "when": "view == agentHub.bookmarks",
           "group": "navigation@1"
         },
         {
-          "command": "agentHub.refreshBookmarks",
+          "command": "agentHub.addBookmark",
           "when": "view == agentHub.bookmarks",
           "group": "navigation@2"
         },
