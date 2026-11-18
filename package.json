@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.85.3",
+  "version": "0.85.4",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -854,6 +854,16 @@
           "dark": "#B04A4A",
           "highContrast": "#B04A4A",
           "highContrastLight": "#B04A4A"
+        }
+      },
+      {
+        "id": "agentHub.doneForeground",
+        "description": "Tab colour of a Claude session that finished a turn you have not looked at yet (the terminal's green, as in the token status line)",
+        "defaults": {
+          "light": "terminal.ansiGreen",
+          "dark": "terminal.ansiGreen",
+          "highContrast": "terminal.ansiGreen",
+          "highContrastLight": "terminal.ansiGreen"
         }
       }
     ]
