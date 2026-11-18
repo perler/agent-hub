@@ -11,7 +11,7 @@ A sidebar for running Claude Code out of VS Code / code-server. Four panels:
    Resuming a folder with several sessions opens a picker.
 3. **Sessions** — every Claude session on the machine, newest first, searchable by anything its tooltip shows,
    with resume. Right-click a row for Resume and Compact (not-running sessions: resumes, then runs `/compact`)
-   and Start New Session Here (fresh session in that row's folder; the old one is left alone).
+   and Start Session (fresh session in that row's folder; the old one is left alone).
 4. **Bookmarks** — URLs, opened in the browser or in a tab inside the editor.
 
 Replaces the standalone `claude-favourites` and `terminal-tree` extensions.

@@ -22,7 +22,7 @@ A queue button opens a checklist; tasks a live session is already working are le
 
 Sessions started in the Claude app always open in ~; when the router sent one to a project, its row shows that folder name before the age, the tooltip says "Routed from the Claude app to <folder>", and the filter matches the folder. Resume still runs in the real start folder.
 
-Sessions, right-click a row: Pin Session (keeps it in a Pinned group at the top, past the age and row limits, until you Unpin it), Resume and Compact (only on sessions that are not running: resumes it and runs `/compact`, to keep working on the same job with room again) and Start New Session Here (a fresh session in that row's folder, for a clean context; the old session is left alone). Favourites and Sessions share one layout: on hover ▶ new session, ↻ resume, 📂 reveal the folder; right-click has the same Run and Folder groups (terminal, reveal, copy folder path), then the session or favourite specifics.
+Sessions, right-click a row: Pin Session (keeps it in a Pinned group at the top, past the age and row limits, until you Unpin it), Resume and Compact (only on sessions that are not running: resumes it and runs `/compact`, to keep working on the same job with room again) and Start Session (a fresh session in that row's folder, for a clean context; the old session is left alone). Favourites and Sessions share one layout: on hover ▶ new session, ↻ resume, 📂 reveal the folder; right-click has the same Run and Folder groups (terminal, reveal, copy folder path), then the session or favourite specifics.
 
 ## 2. Tab badges
 

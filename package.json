@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.85.5",
+  "version": "0.85.6",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -143,22 +143,22 @@
       },
       {
         "command": "agentHub.startClaude",
-        "title": "Start New Session Here",
+        "title": "Start Session",
         "icon": "$(play)"
       },
       {
         "command": "agentHub.resumeClaude",
-        "title": "Resume Claude",
+        "title": "Resume Session",
         "icon": "$(debug-rerun)"
       },
       {
         "command": "agentHub.openTerminalHere",
-        "title": "Open Terminal Here",
+        "title": "Start Terminal",
         "icon": "$(terminal)"
       },
       {
         "command": "agentHub.revealInExplorer",
-        "title": "Reveal in Explorer",
+        "title": "Reveal Session Folder",
         "icon": "$(folder-opened)"
       },
       {
@@ -174,16 +174,6 @@
         "command": "agentHub.removeFavourite",
         "title": "Remove from Favourites",
         "icon": "$(trash)"
-      },
-      {
-        "command": "agentHub.moveUp",
-        "title": "Move Up",
-        "icon": "$(arrow-up)"
-      },
-      {
-        "command": "agentHub.moveDown",
-        "title": "Move Down",
-        "icon": "$(arrow-down)"
       },
       {
         "command": "agentHub.revealTabCwd",
@@ -483,16 +473,6 @@
           "command": "agentHub.renameFavourite",
           "when": "view == agentHub.favourites && viewItem == favourite",
           "group": "4_manage@1"
-        },
-        {
-          "command": "agentHub.moveUp",
-          "when": "view == agentHub.favourites && viewItem == favourite",
-          "group": "4_manage@2"
-        },
-        {
-          "command": "agentHub.moveDown",
-          "when": "view == agentHub.favourites && viewItem == favourite",
-          "group": "4_manage@3"
         },
         {
           "command": "agentHub.removeFavourite",

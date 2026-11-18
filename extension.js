@@ -10,7 +10,7 @@ const {
   BookmarksProvider, addBookmark, setBookmarksProvider, editBookmark, ensureBookmarksFile, openBookmark, removeBookmark,
 } = require('./lib/bookmarks');
 const {
-  FavouritesProvider, addFavouriteFromUri, setFavProvider, getFavs, removeFavourite, setFavs,
+  FavouritesProvider, FavouritesDragAndDrop, addFavouriteFromUri, setFavProvider, getFavs, removeFavourite, setFavs,
 } = require('./lib/favourites');
 const { currentFolderSearch, goToFolder } = require('./lib/folder-search');
 const {
@@ -105,6 +105,7 @@ function activate(context) {
   setFavProvider(favProvider);
   const favView = vscode.window.createTreeView('agentHub.favourites', {
     treeDataProvider: favProvider, showCollapseAll: false,
+    dragAndDropController: new FavouritesDragAndDrop(context), canSelectMany: false,
   });
   context.subscriptions.push(favView);
 
@@ -189,19 +190,6 @@ function activate(context) {
     favProvider.refresh();
   });
   reg('agentHub.removeFavourite', (fav) => removeFavourite(fav, false));
-  const move = async (fav, delta) => {
-    if (!fav) return;
-    const favs = getFavs(context);
-    const idx = favs.findIndex((f) => f.id === fav.id);
-    const next = idx + delta;
-    if (idx < 0 || next < 0 || next >= favs.length) return;
-    const [it] = favs.splice(idx, 1);
-    favs.splice(next, 0, it);
-    await setFavs(context, favs);
-    favProvider.refresh();
-  };
-  reg('agentHub.moveUp', (fav) => move(fav, -1));
-  reg('agentHub.moveDown', (fav) => move(fav, 1));
 
   // session commands
   reg('agentHub.refreshSessions', () => sessProvider.refresh());
