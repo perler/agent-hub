@@ -167,8 +167,6 @@ function activate(context) {
     t.show();
     moveTerminalTabToEnd(t);
   }));
-  reg('agentHub.openFolder', folderAction((f) =>
-    vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(f.path), { forceNewWindow: true })));
   reg('agentHub.revealInExplorer', folderAction((f) =>
     vscode.commands.executeCommand('revealInExplorer', vscode.Uri.file(f.path))));
   reg('agentHub.copyPath', folderAction((f) => {

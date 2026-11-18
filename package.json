@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.85.4",
+  "version": "0.85.5",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -157,11 +157,6 @@
         "icon": "$(terminal)"
       },
       {
-        "command": "agentHub.openFolder",
-        "title": "Open Folder in New Window",
-        "icon": "$(folder-opened)"
-      },
-      {
         "command": "agentHub.revealInExplorer",
         "title": "Reveal in Explorer",
         "icon": "$(folder-opened)"
@@ -177,7 +172,7 @@
       },
       {
         "command": "agentHub.removeFavourite",
-        "title": "Remove",
+        "title": "Remove from Favourites",
         "icon": "$(trash)"
       },
       {
@@ -458,11 +453,6 @@
           "command": "agentHub.revealInExplorer",
           "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
           "group": "2_folder@2"
-        },
-        {
-          "command": "agentHub.openFolder",
-          "when": "view == agentHub.favourites && viewItem == favourite || view == agentHub.sessions && viewItem =~ /^session(Live)?(Asana)?(Pinned)?$/",
-          "group": "2_folder@3"
         },
         {
           "command": "agentHub.copyPath",
