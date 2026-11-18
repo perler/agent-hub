@@ -27,7 +27,8 @@ const queue = [
 const waitingTask = { gid: '1218000000444', name: 'Backup after SRV001', priority_marker: '🕓', queue_group: 'waiting',
   projects: [{ gid: 'p-bb', name: 'BB EDV' }], custom_fields: [{ enum_value: { name: '🕓 Waiting on event' } }] };
 const cli = path.join(tmp, 'asana');
-fs.writeFileSync(cli, `#!/bin/sh\n[ "$1" = queue ] && cat ${JSON.stringify(path.join(tmp, 'q.json'))}\n`, { mode: 0o755 });
+const cliLog = path.join(tmp, 'cli.log');
+fs.writeFileSync(cli, `#!/bin/sh\necho "$@" >> ${JSON.stringify(cliLog)}\n[ "$1" = queue ] && cat ${JSON.stringify(path.join(tmp, 'q.json'))}\nexit 0\n`, { mode: 0o755 });
 fs.writeFileSync(path.join(tmp, 'q.json'), JSON.stringify(queue));
 fs.mkdirSync(path.join(tmp, '.cache', 'claude-code-helper'), { recursive: true });
 process.env.HOME = tmp;
@@ -48,6 +49,7 @@ const vscode = {
     withProgress: (_o, fn) => fn(),
     showWarningMessage: (m) => { throw new Error('unexpected warning: ' + m); },
     showErrorMessage: (m) => { throw new Error('unexpected error: ' + m); },
+    showInformationMessage: async (m, ...acts) => { infos.push(m); return acts.includes(undoAnswer) ? undoAnswer : undefined; },
     createQuickPick() {
       const h = {};
       const qp = { items: [], selectedItems: [], buttons: [], hidden: false,
@@ -61,6 +63,8 @@ const vscode = {
   },
 };
 let lastQp = null;
+const infos = [];
+let undoAnswer = null;   // what Pat clicks on the ✓ notification
 const launches = [];
 const origLoad = Module._load;
 Module._load = function (req, parent, isMain) {
@@ -117,20 +121,20 @@ function check(name, cond, detail) {
   check('only the 💬 title button is left', lastQp.buttons.length === 1, lastQp.buttons);
 
   // 4. ▶ on a row opens one task in its own tab in its client's folder.
-  script = (qp, h) => { const it = tasks(qp).find((i) => i.task.gid === '1218000000111'); h.item({ item: it, button: it.buttons[1] }); };
+  script = (qp, h) => { const it = tasks(qp).find((i) => i.task.gid === '1218000000111'); h.item({ item: it, button: it.buttons[it.buttons.length - 1] }); };
   launches.length = 0;
   await nt.pickFromQueue('today+input');
   const [a] = launches;
   check('▶ = one task tab, no walk', launches.length === 1 && a.namePrefix === '📌 ', launches.map((l) => l.dir));
   check('new task gets a slug folder under its client', a && a.dir === path.join(clients, 'BB', 'printer-offline'), a && a.dir);
   check('task prompt names the task and forbids a copy', a && /Asana task "✨ Printer offline again" \(1218000000111\).*do NOT create a second one/.test(a.initialPrompt), a && a.initialPrompt);
-  script = (qp, h) => { const it = tasks(qp).find((i) => i.task.gid === '1218000000222'); h.item({ item: it, button: it.buttons[1] }); };
+  script = (qp, h) => { const it = tasks(qp).find((i) => i.task.gid === '1218000000222'); h.item({ item: it, button: it.buttons[it.buttons.length - 1] }); };
   launches.length = 0;
   await nt.pickFromQueue('today+input');
   check('task already stamped with its gid reuses its folder', launches[0] && launches[0].dir === path.join(clients, 'RAH', 'old-work'), launches[0] && launches[0].dir);
 
   // 5. ▶ on a row opens that task now, whatever is ticked.
-  script = (qp, h) => { tick(qp, '1218000000111'); const it = tasks(qp).find((i) => i.task.gid === '1218000000333'); h.item({ item: it, button: it.buttons[1] }); };
+  script = (qp, h) => { tick(qp, '1218000000111'); const it = tasks(qp).find((i) => i.task.gid === '1218000000333'); h.item({ item: it, button: it.buttons[it.buttons.length - 1] }); };
   launches.length = 0;
   await nt.pickFromQueue('today');
   check('▶ opens just that row', launches.length === 1 && launches[0].namePrefix === '📌 ' && launches[0].dir.startsWith(path.join(clients, 'BB', 'something-else')), launches.map((l) => l.dir));
@@ -140,6 +144,28 @@ function check(name, cond, detail) {
   launches.length = 0; opened.length = 0;
   check('↗ then Esc reports nothing started', !(await nt.pickFromQueue('today')));
   check('↗ opens the task in Asana', opened.length === 1 && /1218000000111$/.test(opened[0]) && launches.length === 0, { opened, launches });
+
+  // 7. ✓ closes the task as Pat, drops the row, keeps the list open with its ticks; Undo reopens.
+  const cliCalls = () => (fs.existsSync(cliLog) ? fs.readFileSync(cliLog, 'utf8').trim().split('\n') : []).filter((l) => /^(done|reopen) /.test(l));
+  const waitFor = async (cond) => { for (let i = 0; i < 100 && !cond(); i++) await new Promise((r) => setTimeout(r, 20)); };
+  for (const undo of [null, 'Undo']) {
+    undoAnswer = undo; infos.length = 0; launches.length = 0;
+    try { fs.unlinkSync(cliLog); } catch {}
+    let left = null, ticked = null, open = null;
+    script = (qp, h) => {
+      tick(qp, '1218000000333');
+      const it = tasks(qp).find((i) => i.task.gid === '1218000000111');
+      h.item({ item: it, button: it.buttons[1] });
+      waitFor(() => infos.length >= (undo ? 2 : 1)).then(() => {
+        left = tasks(qp).map((i) => i.task.gid); ticked = qp.selectedItems.map((i) => i.task.gid); open = !qp.hidden; qp.hide();
+      });
+    };
+    await nt.pickFromQueue('today');
+    check(`✓${undo ? ' + Undo' : ''}: row gone, list open, tick kept`, open && !left.includes('1218000000111') && left.length === 2 && ticked.join() === '1218000000333', { left, ticked, open });
+    const want = undo ? ['done 1218000000111 --as-pat', 'reopen 1218000000111 --as-pat'] : ['done 1218000000111 --as-pat'];
+    check(`✓${undo ? ' + Undo' : ''}: CLI calls`, cliCalls().join('|') === want.join('|') && launches.length === 0, cliCalls());
+  }
+  undoAnswer = null;
 
   // 8. Waiting-on-event tasks: last, under their own separator, out of the title count.
   fs.writeFileSync(path.join(tmp, 'q.json'), JSON.stringify([waitingTask, ...queue]));

@@ -141,7 +141,7 @@ what is in that queue, or that inbox, right now.
 📅, ⏳ and 📥 open their queue as a checklist first, grouped by project. The ▶ on a row
 (shown on hover) opens that task at once in a Claude session of its own, in its own tab and
 folder (the folder already stamped with its gid when it has one, otherwise a new one under
-its client); the ↗ beside it opens the task in Asana. Tick tasks, then Enter (or the 💬 in the title bar)
+its client); the ↗ beside it opens the task in Asana, the ✓ marks it done (as Pat, with Undo in the notification). Tick tasks, then Enter (or the 💬 in the title bar)
 walks just the ticked tasks in one inbox-zero session (`only <gids>`; nothing ticked walks the
 whole queue). Esc starts nothing.
 A task some live Claude session is already working is not in the checklist at all (the
