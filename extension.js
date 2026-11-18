@@ -7,7 +7,7 @@ const {
   asanaAvailable, asanaTaskFor, forgetAsanaAvailable, openAsanaTask, refreshAsanaProjects,
 } = require('./lib/asana');
 const {
-  BookmarksProvider, addBookmark, setBookmarksProvider, editBookmark, ensureBookmarksFile, openBookmark, removeBookmark,
+  BookmarksProvider, addBookmark, setBookmarksProvider, editBookmark, openBookmark, removeBookmark,
 } = require('./lib/bookmarks');
 const {
   FavouritesProvider, FavouritesDragAndDrop, addFavouriteFromUri, setFavProvider, getFavs, removeFavourite, setFavs,
@@ -276,10 +276,6 @@ function activate(context) {
   reg('agentHub.editBookmark', (bm) => editBookmark(bm));
   reg('agentHub.removeBookmark', (bm) => removeBookmark(bm));
   reg('agentHub.openBookmark', (bm) => openBookmark(bm));
-  reg('agentHub.openBookmarksFile', async () => {
-    const file = ensureBookmarksFile();
-    await vscode.window.showTextDocument(vscode.Uri.file(file));
-  });
 
   // Right-click on a session's own editor tab. See terminalFromTabArg for how the
   // menu's arguments turn back into a terminal; when they can't pin down exactly one,
