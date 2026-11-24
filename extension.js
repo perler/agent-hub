@@ -23,6 +23,7 @@ const { sessionTerminals } = require('./lib/session-registry');
 const {
   SessionsProvider, setExtCtx, getSessionCwd, hiddenSessions, pinnedSessions, resumeSessionNode, resumeAndCompactNode, setHiddenSessions, setPinnedSessions,
 } = require('./lib/sessions');
+const { roomCommands, watchRooms } = require('./lib/rooms');
 const { cfg, shortHome } = require('./lib/shared');
 const { startTabLabelWatcher } = require('./lib/tablabels');
 const { openUploadPanel } = require('./lib/upload');
@@ -208,6 +209,8 @@ function activate(context) {
     await setPinnedSessions(pinned);
     sessProvider.refresh();
   };
+  roomCommands(reg, resumeSessionNode);
+  watchRooms(context, () => sessProvider.refresh());
   reg('agentHub.pinSession', (node) => setPinned(node, true));
   reg('agentHub.unpinSession', (node) => setPinned(node, false));
   reg('agentHub.hideSession', async (node) => {

@@ -12,6 +12,9 @@ A sidebar for running Claude Code out of VS Code / code-server. Four panels:
 3. **Sessions** — every Claude session on the machine, newest first, searchable by anything its tooltip shows,
    with resume. Right-click a row for Resume and Compact (not-running sessions: resumes, then runs `/compact`)
    and Start Session (fresh session in that row's folder; the old one is left alone).
+   Guest rooms of the rooms server are listed in a **Rooms** group at the top (👥, own icon): click opens the
+   guest page in the external browser, **Work in Room** starts or resumes a local session in the rooms folder
+   for that room (see HELP.md).
 4. **Bookmarks** — URLs, opened in the browser or in a tab inside the editor.
 
 Replaces the standalone `claude-favourites` and `terminal-tree` extensions.
@@ -83,6 +86,8 @@ highlighted row. Uses `fd` (or
 | `agentHub.tabStateTrace` | `false` | Log each tab's computed badge to `~/.cache/claude-tab-state.exttrace` |
 | `agentHub.sessionsMaxAgeDays` | `7` | Sessions only lists sessions touched in the last N days |
 | `agentHub.sessionsMaxItems` | `100` | Cap on the Sessions list |
+| `agentHub.roomsDir` | `~/projects/infra/rooms` | Rooms server folder whose `sessions/<id>/meta.json` files are listed as Rooms in Sessions |
+| `agentHub.roomsUrl` | `https://rooms.erler-edv-beratung.de` | Base URL for Open Room and Copy Guest Link |
 | `agentHub.scratchDir` | `~/tasks` | Base directory for a new, unnamed session |
 | `agentHub.autoRenameScratchSessions` | `true` | Rename a finished scratch folder to a slug of Claude's own session title |
 | `agentHub.useTmux` | `true` | Run sessions inside tmux, so they survive a reload and are reachable from Claude Mobile |

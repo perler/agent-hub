@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.85.8",
+  "version": "0.86.1",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
@@ -252,6 +252,28 @@
         "icon": "$(link-external)"
       },
       {
+        "command": "agentHub.openRoom",
+        "title": "Open Room",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "agentHub.workInRoom",
+        "title": "Work in Room",
+        "icon": "$(play)"
+      },
+      {
+        "command": "agentHub.copyRoomId",
+        "title": "Copy Room ID"
+      },
+      {
+        "command": "agentHub.copyRoomLink",
+        "title": "Copy Guest Link"
+      },
+      {
+        "command": "agentHub.openRoomDrive",
+        "title": "Open Drive Folder"
+      },
+      {
         "command": "agentHub.addBookmark",
         "title": "Add Bookmark…",
         "icon": "$(add)",
@@ -478,6 +500,36 @@
           "group": "4_manage@2"
         },
         {
+          "command": "agentHub.workInRoom",
+          "when": "view == agentHub.sessions && viewItem =~ /^room/",
+          "group": "inline@1"
+        },
+        {
+          "command": "agentHub.openRoom",
+          "when": "view == agentHub.sessions && viewItem =~ /^room/",
+          "group": "1_room@1"
+        },
+        {
+          "command": "agentHub.workInRoom",
+          "when": "view == agentHub.sessions && viewItem =~ /^room/",
+          "group": "1_room@2"
+        },
+        {
+          "command": "agentHub.copyRoomId",
+          "when": "view == agentHub.sessions && viewItem =~ /^room/",
+          "group": "2_copy@1"
+        },
+        {
+          "command": "agentHub.copyRoomLink",
+          "when": "view == agentHub.sessions && viewItem =~ /^room/",
+          "group": "2_copy@2"
+        },
+        {
+          "command": "agentHub.openRoomDrive",
+          "when": "view == agentHub.sessions && viewItem == room",
+          "group": "2_copy@3"
+        },
+        {
           "command": "agentHub.editBookmark",
           "when": "view == agentHub.bookmarks && viewItem == bookmark",
           "group": "inline@1"
@@ -684,6 +736,16 @@
             "/tmp"
           ],
           "description": "Hide sessions whose working directory is one of these paths or below it (throwaway scratchpad and temp-dir sessions). ~ is expanded."
+        },
+        "agentHub.roomsDir": {
+          "type": "string",
+          "default": "~/projects/infra/rooms",
+          "description": "Folder of the rooms server; its sessions/<id>/meta.json files are listed as Rooms at the top of Sessions. Nothing is listed when the folder does not exist."
+        },
+        "agentHub.roomsUrl": {
+          "type": "string",
+          "default": "https://rooms.erler-edv-beratung.de",
+          "description": "Base URL of the rooms server; Open Room opens <url>/s/<id> in the external browser."
         },
         "agentHub.sessionsMaxItems": {
           "type": "number",
