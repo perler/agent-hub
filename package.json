@@ -2,7 +2,7 @@
   "name": "agent-hub",
   "displayName": "Agent Hub",
   "description": "A sidebar for running Claude Code out of VS Code: new-task box, favourites, running and recent sessions and bookmarks.",
-  "version": "0.88.0",
+  "version": "0.88.1",
   "publisher": "pat-erler",
   "engines": {
     "vscode": "^1.80.0"
